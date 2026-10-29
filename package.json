@@ -1,0 +1,10 @@
+{
+  "name": "ugn-advertising-command-center",
+  "version": "3.0.0",
+  "private": true,
+  "description": "UGN scheduled advertising dashboard for approved Discord webhooks and assisted Minecraft listing submissions",
+  "main": "server.js",
+  "scripts": {"start": "node server.js", "test": "node --test"},
+  "engines": {"node": ">=22"},
+  "license": "UNLICENSED"
+}

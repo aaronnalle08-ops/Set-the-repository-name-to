@@ -1,0 +1,44 @@
+name: Package UGN website updates
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  package-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: Install Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify package and tests
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          test "v$(node -p "require('./package.json').version")" = "$RELEASE_TAG" || { echo "The tag must match the version in package.json"; exit 1; }
+          npm test
+      - name: Build Windows-update ZIP (no secrets or saved data)
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          files = [
+              'server.js','server.test.js','update-manager.js','update.test.js',
+              'index.html','package.json','README.md','GITHUB_UPDATE_SETUP.md',
+              'start_windows.bat','update_windows.bat','update_windows.ps1',
+              '.gitignore','.github/workflows/release.yml'
+          ]
+          with zipfile.ZipFile('ugn-auto-advertiser.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+              for file in files: z.write(file)
+          print('Created signed-in GitHub release asset without data, .env, or webhooks')
+          PY
+      - name: Attach update package to published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" ugn-auto-advertiser.zip --clobber

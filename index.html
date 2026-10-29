@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0a1423" />
+<title>UGN | Advertising Command Center</title>
+<style>
+  :root { color-scheme: dark; --bg:#080f1d; --panel:#111e30; --panel2:#15243a; --stroke:#293952; --txt:#ebf3ff; --muted:#91a5bd; --cyan:#52e0e2; --blue:#4a8cff; --gold:#ffc06c; --green:#63d6a0; --radius:17px; }
+  *{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at 80% -10%,#14365d 0,transparent 40%),var(--bg);color:var(--txt);font:14px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif} button,input,textarea,select{font:inherit}
+  button{cursor:pointer} .shell{max-width:1390px;margin:auto;display:grid;grid-template-columns:235px 1fr;min-height:100vh}
+  aside{padding:28px 20px;background:#0c1727;border-right:1px solid #26374d;display:flex;flex-direction:column;gap:27px} .brand{display:flex;align-items:center;gap:13px;padding:4px 4px 17px;border-bottom:1px solid var(--stroke)} .emblem{background:linear-gradient(140deg,#3de5df,#317aec);color:#081424;font-weight:950;letter-spacing:-1px;border-radius:12px;padding:12px 10px;font-size:19px;box-shadow:0 0 35px #1fe0db28} .brand strong{font-size:16px;letter-spacing:.03em;line-height:1.2;display:block}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+  nav{display:grid;gap:8px} nav button{display:flex;gap:12px;align-items:center;color:#b4c7dd;border:1px solid transparent;border-radius:11px;padding:12px 14px;background:transparent;text-align:left}nav button.active, nav button:hover{color:white;border-color:#286077;background:#123248}nav .sym{font-size:19px;width:25px;text-align:center}
+  .sidebar-note{margin-top:auto;background:linear-gradient(150deg,#18324b,#132134);border:1px solid #2a4860;border-radius:15px;padding:16px}.sidebar-note strong{color:#c4fafd}.sidebar-note p{font-size:12px;color:#adc1d6;margin-bottom:0}
+  main{padding:29px 34px 55px;min-width:0}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:28px}.eyebrow{font-size:11px;color:var(--cyan);letter-spacing:.20em;text-transform:uppercase;font-weight:800}.top h1{margin:3px 0 0;font-size:28px;letter-spacing:-.035em}.status{font-size:12px;border:1px solid #365064;background:#17293b;border-radius:30px;color:#b5dbdf;padding:9px 13px;white-space:nowrap}.status i{display:inline-block;background:#5dd7a5;width:7px;height:7px;border-radius:50%;margin-right:6px}
+  .hero{position:relative;overflow:hidden;padding:30px 30px 27px;border:1px solid #256479;border-radius:22px;background:linear-gradient(120deg,#164359,#162945 58%,#111e33)}.hero::after{content:'◈';position:absolute;font-size:250px;right:38px;top:-120px;opacity:.075;pointer-events:none}.hero .mini{font-size:11px;font-weight:850;letter-spacing:.18em;color:#8ef3f0}.hero h2{font-size:32px;line-height:1.08;letter-spacing:-.04em;max-width:510px;margin:10px 0}.hero p{max-width:580px;color:#bdcfdf}.iprow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:22px}.ip{font-size:13px;background:#071c2fbd;border:1px solid #397081;border-radius:10px;padding:11px 14px;letter-spacing:.03em}.primary,.secondary,.compact{border-radius:10px;padding:11px 15px;font-weight:750;border:1px solid transparent}.primary{background:linear-gradient(110deg,#49ddd9,#60a8fc);color:#081827}.primary:hover{filter:brightness(1.09)}.secondary{background:#1b2d43;color:#e5f6ff;border:1px solid #35526c}.secondary:hover{background:#24405a}.compact{background:#22354a;border:1px solid #3c566d;color:#e5f5fa;font-size:12px;padding:8px 11px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 28px}.stat{border:1px solid var(--stroke);background:#111e30;border-radius:16px;padding:19px}.stat span{font-size:12px;color:#9eb4c9}.stat strong{display:block;font-size:27px;line-height:1.2;margin:8px 0 2px}.stat small{color:#7390a8}
+  .headrow{display:flex;justify-content:space-between;gap:15px;align-items:end;margin-bottom:14px}.headrow h2{font-size:20px;margin:0;letter-spacing:-.02em}.headrow p{margin:4px 0 0;color:var(--muted);font-size:12px}.headrow button{white-space:nowrap}.platforms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.site{padding:18px;border:1px solid var(--stroke);background:var(--panel);border-radius:15px;min-width:0}.site-top{display:flex;justify-content:space-between;gap:8px}.site-icon{background:#263d59;border:1px solid #315372;border-radius:11px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:950;font-size:16px;color:#8df3f3}.site h3{font-size:15px;margin:10px 0 2px}.site p{font-size:12px;color:#a2b8ce;margin:0 0 16px;min-height:36px}.tag{background:#234052;border:1px solid #315268;color:#99f3ef;border-radius:99px;padding:4px 8px;font-size:10px;white-space:nowrap;height:max-content}.tag.manual{background:#292e43;border-color:#3b4665;color:#c7ccf1}.site-actions{display:flex;gap:8px;flex-wrap:wrap}.site-actions .compact{flex:1}.site-actions .secondary{flex:1;min-width:130px;padding:8px 9px;font-size:12px}.site .last{font-size:11px;color:#7c9db4;margin-top:12px}
+  .panel{border-radius:17px;background:var(--panel);border:1px solid var(--stroke);padding:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}.field label{font-size:12px;color:#b8cadd;font-weight:700}.field input,.field textarea,.field select{background:#0d192a;color:#f2f6ff;border:1px solid #345069;border-radius:10px;padding:11px 12px;width:100%;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--cyan)}.field textarea{resize:vertical;min-height:95px}.helper{font-size:12px;color:var(--muted)}.draft{white-space:pre-wrap;background:#091728;border:1px solid #344f69;padding:19px;border-radius:12px;color:#dfefff;min-height:195px;font-size:13px}.section{display:none}.section.show{display:block}.filter{display:flex;gap:8px;flex-wrap:wrap}.filter button{border:1px solid #355068;color:#bad0e2;background:transparent;border-radius:99px;padding:6px 11px;font-size:12px}.filter button.selected{border-color:#4de5df;background:#143f4d;color:#bbffff}.footnote{margin:24px 0;color:#839cb4;font-size:12px}.toast{position:fixed;z-index:100;right:20px;bottom:22px;background:#173f44;border:1px solid #39c9be;padding:13px 17px;border-radius:12px;box-shadow:0 8px 35px #0009;color:#d5fffc;display:none}.toast.show{display:block}
+  .schedule-row{display:grid;grid-template-columns:1.1fr 1fr .8fr;gap:10px;align-items:center;border-top:1px solid var(--stroke);padding:14px 0}.schedule-row small{color:var(--muted)}.schedule-row .badge{font-size:11px;background:#22374c;border-radius:7px;padding:6px 8px;display:inline-block}.helptext{margin-top:12px;color:#9aacc2;font-size:12px}
+  @media(max-width:1000px){.shell{grid-template-columns:80px 1fr}aside{padding:21px 12px}.brand{justify-content:center}.brand .bn,nav button .label,.sidebar-note{display:none}nav button{justify-content:center;padding:12px}.stats{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:650px){.shell{grid-template-columns:1fr}aside{padding:10px 15px;flex-direction:row;align-items:center;gap:10px;position:sticky;top:0;z-index:5} .brand{border:0;padding:0}.brand .bn{display:none}nav{display:flex;gap:3px;flex:1;justify-content:flex-end}nav button{padding:7px} .sidebar-note{display:none} main{padding:20px 14px 42px}.top{margin-bottom:17px}.top h1{font-size:22px}.status{display:none}.hero{padding:24px 20px}.hero h2{font-size:26px}.stats{gap:8px}.stat{padding:14px}.stat strong{font-size:23px}.platforms,.two{grid-template-columns:1fr}.headrow{align-items:start}.headrow h2{font-size:18px}.schedule-row{grid-template-columns:1fr 1fr}.schedule-row>div:nth-child(2){grid-row:2;grid-column:1/-1}}
+
+  .update-message{border:1px solid #365269;border-radius:11px;padding:14px 16px;background:#102a3b;color:#c9eaf5;margin:12px 0;font-size:13px;overflow-wrap:anywhere}.update-message.good{background:#143c31;border-color:#2e7c65;color:#c5fae5}.update-message.warn{background:#433228;border-color:#946d44;color:#ffe0bc}.update-actions{display:flex;gap:10px;flex-wrap:wrap}.update-actions button{min-width:150px}.update-actions button:disabled{opacity:.5;cursor:not-allowed} .update-field{max-width:610px}.update-version{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}.update-version strong{font-size:23px;color:#94edf1}
+  .autostatus{padding:12px 16px;background:#152637;border:1px solid #30546b;border-radius:12px;color:#c7e3f0;font-size:13px;margin-bottom:17px}.autostatus.online{background:#103c32;border-color:#226959;color:#bcfbe8}.autostatus.offline{background:#402f30;border-color:#805756;color:#f6d3c9}
+  .smallstat{font-size:15px!important;line-height:1.5!important;overflow-wrap:anywhere}.cardtitle{font-size:17px;letter-spacing:-.025em;margin:0 0 16px}.autobuttons{display:flex;gap:10px;flex-wrap:wrap}.autobuttons button{flex:1}.autobuttons button:disabled{opacity:.45;cursor:not-allowed}.permission{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#c4d7e5;line-height:1.6;margin:0 0 17px}.permission input{margin-top:3px;accent-color:#49ddd9}.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.days label{font-size:12px;display:flex;flex-direction:column;gap:7px;align-items:center;color:#b7cde0;border:1px solid #345069;background:#0d192a;border-radius:9px;padding:8px 2px}.days input{width:16px;height:16px;accent-color:#49ddd9}.webhooklist{margin-top:18px;border-top:1px solid var(--stroke);padding-top:10px;display:grid;gap:12px}.webhook{border:1px solid #355069;background:#0c1a2a;border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.webhook small{display:block;color:#819aaf}.webhook .actions{display:flex;gap:6px;flex-wrap:wrap}.loglist{max-height:370px;overflow:auto}.logentry{border-bottom:1px solid var(--stroke);display:grid;grid-template-columns:155px 1fr auto;gap:12px;align-items:start;padding:11px 3px;font-size:12px}.logentry small{color:#819aaf}.pill{border-radius:100px;padding:3px 8px;background:#274158;color:#c5f0ff}.pill.sent,.pill.enabled{background:#214c40;color:#abf2d6}.pill.failed{background:#502c36;color:#ffc0cc}.pill.paused,.pill.skipped{background:#514029;color:#f9d8a0}
+  @media(max-width:800px){.logentry{grid-template-columns:1fr auto}.logentry div:nth-child(2){grid-row:2;grid-column:1/-1}.days{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside>
+  <div class="brand"><div class="emblem">UGN</div><div class="bn"><strong>UNIVERSAL<br/>NETWORK</strong><small>ADS COMMAND CENTER</small></div></div>
+  <nav aria-label="Main sections">
+    <button class="active" data-view="overview"><span class="sym">▦</span><span class="label">Overview</span></button>
+    <button data-view="campaign"><span class="sym">✎</span><span class="label">Campaign builder</span></button>
+    <button data-view="directory"><span class="sym">⌁</span><span class="label">Advertising sites</span></button>
+    <button data-view="auto"><span class="sym">◷</span><span class="label">Auto scheduler</span></button>
+    <button data-view="tracking"><span class="sym">☷</span><span class="label">Listing tracker</span></button>
+    <button data-view="updates"><span class="sym">⟳</span><span class="label">Website updates</span></button>
+  </nav>
+  <div class="sidebar-note"><strong>Important</strong><p>Automated posting works only with incoming webhooks for channels you control or may promote in. Minecraft listing sites still need approved integrations or manual submissions.</p></div>
+</aside>
+<main>
+  <div class="top"><div><span class="eyebrow">Universal Gaming Network</span><h1 id="pageTitle">Advertising overview</h1></div><span class="status"><i></i> <span id="connectionStatus">Connecting to scheduler...</span></span></div>
+  <section id="overview" class="section show">
+    <div class="hero"><div class="mini">YOUR NETWORK. EVERYWHERE PLAYERS LOOK.</div><h2>Turn one great ad into a smarter campaign.</h2><p>Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.</p><div class="iprow"><span class="ip" id="heroIp">play.universalgaming.us</span><button class="primary" id="copyIp">Copy server address</button><button class="secondary" data-go="campaign">Edit your campaign</button></div></div>
+    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">5</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">5</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
+    <div class="headrow"><div><h2>Recommended advertising sites</h2><p>Start with server directories that accept Minecraft server listings.</p></div><button class="secondary" data-go="directory">See all sites</button></div>
+    <div class="platforms" id="overviewSites"></div>
+    <p class="footnote">Tip: Most server directories require separate accounts, ownership verification, and manual confirmation. Mark a site as submitted only after you actually finish publishing on that site.</p>
+  </section>
+  <section id="campaign" class="section">
+    <div class="headrow"><div><h2>Create a reusable server campaign</h2><p>Save the campaign to the scheduler server before activating automatic posting.</p></div><button class="secondary" id="resetForm">Reset defaults</button></div>
+    <div class="two"><div class="panel">
+      <div class="field"><label for="serverName">Server name</label><input id="serverName" maxlength="90" /></div>
+      <div class="field"><label for="serverIp">Server address</label><input id="serverIp" maxlength="150" spellcheck="false" /></div>
+      <div class="two"><div class="field"><label for="javaPort">Java port</label><input id="javaPort" type="number" min="1" max="65535" /></div><div class="field"><label for="bedrockPort">Bedrock port</label><input id="bedrockPort" type="number" min="1" max="65535" /></div></div>
+      <div class="field"><label for="serverDesc">Server description</label><textarea id="serverDesc" rows="5" maxlength="1200"></textarea></div>
+      <div class="field"><label for="discord">Discord invite (optional)</label><input id="discord" type="url" placeholder="https://discord.gg/..." /></div>
+      <div class="field"><label for="website">Website (optional)</label><input id="website" type="url" placeholder="https://..." /></div>
+      <button class="primary" id="saveCampaign">Save campaign</button>
+    </div><div class="panel">
+      <div class="field"><label for="adStyle">Advertisement format</label><select id="adStyle"><option value="short">Short listing</option><option value="long">Full listing</option><option value="discord">Discord/community post</option></select></div>
+      <div class="draft" id="adPreview" aria-live="polite"></div>
+      <div class="iprow"><button class="primary" id="copyAd">Copy advertisement</button><button class="secondary" id="downloadAd">Download .txt</button></div>
+      <p class="helper">Copy the draft into a site's allowed listing form. Check each site's character limits and policies before publishing.</p>
+    </div></div>
+  </section>
+  <section id="directory" class="section">
+    <div class="headrow"><div><h2>Advertising destination directory</h2><p>These are supported opening points, not connected autoposting services.</p></div><div class="filter"><button class="selected" data-filter="all">All</button><button data-filter="pending">Pending</button><button data-filter="submitted">Submitted</button></div></div>
+    <div class="platforms" id="allSites"></div><p class="footnote">CraftRank supports a prefilled add-server form, but still requires owner login and confirmation. Other entries open their public registration, listing or help pages.</p>
+  </section>
+
+  <section id="auto" class="section">
+    <div class="headrow"><div><h2>Custom automatic advertising</h2><p>Schedule posts to approved Discord announcement channels. Your computer must run the backend, or you must deploy it to always-on hosting.</p></div><button class="secondary" id="refreshAuto">Refresh status</button></div>
+    <div class="autostatus" id="autoStatus" role="status">Connecting to scheduler backend…</div>
+    <div class="stats">
+      <div class="stat"><span>Schedule</span><strong id="autoState">Paused</strong><small>Requires connected destination</small></div>
+      <div class="stat"><span>Next automatic post</span><strong id="nextPost" class="smallstat">Not scheduled</strong><small id="nextZone">—</small></div>
+      <div class="stat"><span>Connected channels</span><strong id="channelCount">0</strong><small>Authorized Discord webhooks</small></div>
+      <div class="stat"><span>Posts accepted</span><strong id="autoSent">0</strong><small>By Discord, not guaranteed reach</small></div>
+    </div>
+    <div class="two">
+      <div class="panel">
+        <h3 class="cardtitle">Schedule your posts</h3>
+        <div class="field"><label for="scheduleMode">Choose schedule style</label><select id="scheduleMode"><option value="interval">Every X hours or days</option><option value="weekly">Specific weekdays at a time</option></select></div>
+        <div id="intervalFields">
+          <div class="two"><div class="field"><label for="scheduleEvery">Post every</label><input type="number" min="1" max="720" step="1" id="scheduleEvery" value="6" /></div><div class="field"><label for="scheduleUnit">Unit</label><select id="scheduleUnit"><option value="hours">Hours (minimum 6)</option><option value="days">Days</option></select></div></div>
+          <p class="helper">Examples: 6 hours, 12 hours, 3 days. The first scheduled post runs after the first full interval.</p>
+        </div>
+        <div id="weeklyFields" hidden>
+          <div class="field"><label>Post on these weekdays</label><div class="days">
+            <label><input type="checkbox" name="weekDay" value="0"/>Sun</label>
+            <label><input type="checkbox" name="weekDay" value="1" checked/>Mon</label>
+            <label><input type="checkbox" name="weekDay" value="2"/>Tue</label>
+            <label><input type="checkbox" name="weekDay" value="3" checked/>Wed</label>
+            <label><input type="checkbox" name="weekDay" value="4"/>Thu</label>
+            <label><input type="checkbox" name="weekDay" value="5" checked/>Fri</label>
+            <label><input type="checkbox" name="weekDay" value="6"/>Sat</label>
+          </div></div>
+          <div class="field"><label for="scheduleTime">Local post time</label><input type="time" id="scheduleTime" value="18:00"/></div>
+        </div>
+        <div class="field"><label for="timeZone">Posting time zone</label><select id="timeZone"><option value="America/New_York">Eastern (New York)</option><option value="America/Chicago">Central (Chicago)</option><option value="America/Denver">Mountain (Denver)</option><option value="America/Los_Angeles">Pacific (Los Angeles)</option><option value="UTC">UTC</option><option value="Europe/London">London</option></select></div>
+        <div class="autobuttons"><button class="secondary" id="saveSchedule">Save custom schedule</button><button class="primary" id="toggleSchedule" disabled>Start automatic posts</button></div>
+        <p class="helper">Saving a schedule does not start it. Changes to an active schedule reset the next-post countdown. The scheduler skips stale posts rather than sending a burst after a long outage.</p>
+      </div>
+      <div class="panel">
+        <h3 class="cardtitle">Connect a permitted channel</h3>
+        <p class="helper">Create a webhook in a Discord channel where you're allowed to post advertisements: Edit Channel → Integrations → Webhooks → New Webhook → Copy Webhook URL.</p>
+        <form id="newChannelForm">
+          <div class="field"><label for="webhookName">Channel nickname</label><input id="webhookName" maxlength="60" placeholder="My UGN announcements" required autocomplete="off"/></div>
+          <div class="field"><label for="webhookUrl">Discord webhook URL (private)</label><input id="webhookUrl" type="password" required placeholder="https://discord.com/api/webhooks/..." autocomplete="off"/></div>
+          <label class="permission"><input type="checkbox" id="permissionConfirmed" required/> I own this channel or have explicit permission to schedule promotional posts here.</label>
+          <button class="primary" type="submit" id="addWebhook">Connect Discord webhook</button>
+        </form>
+        <p class="helper">Webhook secrets are stored in the backend's private data file, never shown again in the browser. Up to five approved channels.</p>
+        <div id="webhookList" class="webhooklist"><p class="helper">No channels connected.</p></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="headrow"><div><h3 class="cardtitle">Scheduled advertisement preview</h3><p>Exactly what the scheduler will send, built from your saved campaign. Edit it in Campaign builder.</p></div><button class="secondary" data-go="campaign">Edit campaign</button></div>
+      <div class="draft" id="autoMessagePreview">Save your campaign to preview its scheduled message.</div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="headrow"><div><h3 class="cardtitle">Delivery history</h3><p>Shows real requests the backend made, not simulated advertising results.</p></div><button class="secondary" id="refreshLogs">Refresh log</button></div>
+      <div id="deliveryLogs" class="loglist"><p class="helper">No delivery attempts yet.</p></div>
+    </div>
+    <p class="footnote">This tool does not log in to Minecraft listing sites, solve CAPTCHA, scrape accounts, send unsolicited DMs, or bypass posting limits. Keep promotional posts relevant and allowed by destination rules.</p>
+  </section>
+  <section id="updates" class="section">
+    <div class="headrow"><div><h2>GitHub website updates</h2><p>Check for a newer version and install it straight from a release in your own GitHub repository.</p></div><button class="secondary" id="refreshUpdate">Refresh update status</button></div>
+    <div class="panel">
+      <div class="update-version"><span>Installed website version</span><strong id="installedVersion">—</strong></div>
+      <div class="field update-field"><label for="githubRepo">Your trusted public GitHub repository</label><input id="githubRepo" placeholder="yourname/ugn-auto-advertiser" autocomplete="off" spellcheck="false" /></div>
+      <div class="update-actions"><button class="secondary" id="saveUpdateRepo" disabled>Save GitHub repository</button><button class="primary" id="checkUpdate" disabled>Check for updates</button></div>
+      <div id="updateMessage" class="update-message" role="status">Checking whether local Windows updates are available…</div>
+      <div id="latestUpdate" class="helper">No GitHub release checked yet.</div>
+      <div class="update-actions" style="margin-top:18px"><button class="primary" id="installUpdate" disabled>Install update &amp; restart</button></div>
+      <p class="helper">The updater uses GitHub releases from the repository you choose. Installing replaces application code, not your saved schedules or Discord webhooks. Your website will briefly restart.</p>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3 class="cardtitle">How to publish a website update</h3>
+      <p class="helper">Put the included project files in a public GitHub repository with the included <code>.github/workflows/release.yml</code> workflow. Change the version in <code>package.json</code>, then publish a GitHub release with a matching tag, for example <code>v3.0.1</code>. GitHub Actions attaches the verified update ZIP. Then click Check for updates above.</p>
+      <p class="helper">The button works only on Windows when this project was started using <code>start_windows.bat</code> on localhost. It cannot update a hosted server directly, and GitHub account access is not included.</p>
+      <a href="https://github.com/new" target="_blank" rel="noopener noreferrer" style="color:#71e0ed">Create your GitHub repository</a>
+    </div>
+  </section>
+  <section id="tracking" class="section">
+    <div class="headrow"><div><h2>Submission tracker</h2><p>Log completion dates and check your work before reposting.</p></div><button class="secondary" id="exportProgress">Export CSV</button></div>
+    <div class="panel"><div id="trackingRows"></div><p class="helptext">A saved submission is not a verified live advertisement. This tracker records your own confirmation, not third-party status. Reposting and bumps must follow each platform's rules.</p></div>
+  </section>
+</main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+'use strict';
+const DEFAULTS = {serverName:'Universal Gaming Network — Universal SMP',serverIp:'play.universalgaming.us',javaPort:'25565',bedrockPort:'19132',serverDesc:'A community-driven survival Minecraft network with Java & Bedrock crossplay. Grind, explore, build, and survive with custom furniture, plushies, armor, tools, seasonal content, an economy, jobs, and more. Play solo or with friends!',discord:'',website:''};
+const SITES=[
+ {id:'craftrank',name:'CraftRank',initial:'CR',type:'Prefilled',desc:'Prefills the server registration form; sign in, review and confirm yourself.',url:'https://craftrank.org/panel/add',auto:'prefill'},
+ {id:'minecraftmp',name:'Minecraft-MP',initial:'MP',type:'Manual',desc:'Free server listing with separate registration and server details.',url:'https://minecraft-mp.com/your-server/'},
+ {id:'planetminecraft',name:'Planet Minecraft',initial:'PM',type:'Manual',desc:'Post your owned server once and verify ownership using its MOTD.',url:'https://www.planetminecraft.com/servers/'},
+ {id:'minecraftservers',name:'MinecraftServers.org',initial:'MS',type:'Manual',desc:'Create an account, verify email, and add your online server.',url:'https://minecraftservers.org/help'},
+ {id:'atlas',name:'Minecraft Atlas',initial:'MA',type:'Manual',desc:'Free listing page; the server must be online and reachable.',url:'https://minecraftatlas.com/submit'}
+];
+let settings=read('ugnSettings',DEFAULTS);let progress=read('ugnProgress',{});let filter='all';
+function read(k, fallback){try{return JSON.parse(localStorage.getItem(k))||structuredClone(fallback)}catch{return {...fallback}}}
+function store(k,obj){try{localStorage.setItem(k,JSON.stringify(obj))}catch{notify('Browser storage is unavailable; this session may not persist.')}}
+function el(id){return document.getElementById(id)}
+function notify(s){const t=el('toast');t.textContent=s;t.classList.add('show');clearTimeout(notify.timer);notify.timer=setTimeout(()=>t.classList.remove('show'),3200)}
+async function copy(s){try{await navigator.clipboard.writeText(s);notify('Copied to clipboard')}catch{const ta=document.createElement('textarea');ta.value=s;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');notify('Copied to clipboard')}catch{notify('Copy is unavailable in this browser')}ta.remove()}}
+function getData(){const obj={};for(const k of Object.keys(DEFAULTS))obj[k]=el(k).value.trim();return obj}
+function putData(d){for(const k of Object.keys(DEFAULTS))el(k).value=d[k]??'';updatePreview()}
+function validPort(p){return /^\d+$/.test(p)&&Number(p)>=1&&Number(p)<=65535}
+function titleCase(s){return s.trim()||'Universal SMP'}
+function ad(d,style){const name=titleCase(d.serverName),ip=d.serverIp||'YOUR-SERVER-IP',ja=d.javaPort||'25565',be=d.bedrockPort||'19132',description=d.serverDesc.trim();const links=[d.discord&&`Discord: ${d.discord}`,d.website&&`Website: ${d.website}`].filter(Boolean).join('\n');
+if(style==='short')return `${name} | Java + Bedrock Crossplay\n${description}\n\nJava: ${ip}:${ja}\nBedrock: ${ip}:${be}${links?'\n'+links:''}`;
+if(style==='discord')return `🌌 WELCOME TO ${name.toUpperCase()}! 🌌\n\n🎮 JAVA + BEDROCK CROSSPLAY\n\n${description}\n\n☕ Java: ${ip} (Port ${ja})\n📱 Bedrock: ${ip} (Port ${be})${links?'\n\n'+links:''}\n\n🔥 Join us, explore, build, and make your mark!`;
+return `${name}\n\n${description}\n\nWHAT TO EXPECT\n• Java + Bedrock crossplay\n• Survival, exploration and building\n• Custom content and progression\n• Community-focused multiplayer\n\nHOW TO JOIN\nJava address: ${ip}\nJava port: ${ja}\nBedrock address: ${ip}\nBedrock port: ${be}${links?'\n\n'+links:''}\n\nCome build your story with us!`;
+}
+function updatePreview(){el('adPreview').textContent=ad(getData(),el('adStyle').value)}
+function craftUrl(){const p=new URLSearchParams();p.set('ref','UGN');p.set('name',settings.serverName);p.set('host',settings.serverIp);p.set('port',settings.javaPort);p.set('edition','java');p.set('lang','en');if(settings.discord)p.set('discord',settings.discord);if(settings.website)p.set('website',settings.website);p.set('description',settings.serverDesc);return 'https://craftrank.org/panel/add?'+p.toString()}
+function siteCard(s){let saved=progress[s.id],wrap=document.createElement('article');wrap.className='site';const top=document.createElement('div');top.className='site-top';const icon=document.createElement('div');icon.className='site-icon';icon.textContent=s.initial;const tag=document.createElement('span');tag.className='tag'+(s.type==='Manual'?' manual':'');tag.textContent=s.type;top.append(icon,tag);wrap.append(top);const h=document.createElement('h3');h.textContent=s.name;const desc=document.createElement('p');desc.textContent=s.desc;wrap.append(h,desc);const buttons=document.createElement('div');buttons.className='site-actions';const open=document.createElement('button');open.className='secondary';open.textContent=s.type==='Prefilled'?'Open prefilled form ↗':'Open website ↗';open.addEventListener('click',()=>{window.open(s.auto==='prefill'?craftUrl():s.url,'_blank','noopener,noreferrer')});const mark=document.createElement('button');mark.className='compact';mark.textContent=saved?'✓ Submitted':'Mark submitted';mark.addEventListener('click',()=>{if(progress[s.id])delete progress[s.id];else progress[s.id]=new Date().toISOString();store('ugnProgress',progress);render();notify(progress[s.id]?'Marked as submitted':'Marked as pending')});buttons.append(open,mark);wrap.append(buttons);if(saved){const last=document.createElement('div');last.className='last';last.textContent='Recorded: '+new Date(saved).toLocaleString();wrap.append(last)}return wrap}
+function render(){const count=SITES.filter(s=>progress[s.id]).length;el('statSubmitted').textContent=count;el('statRemaining').textContent=SITES.length-count;el('heroIp').textContent=settings.serverIp;el('overviewSites').replaceChildren(...SITES.slice(0,4).map(siteCard));const shown=SITES.filter(s=>filter==='all'||(filter==='submitted'?!!progress[s.id]:!progress[s.id]));el('allSites').replaceChildren(...shown.map(siteCard));const r=el('trackingRows');r.replaceChildren();for(const s of SITES){const line=document.createElement('div');line.className='schedule-row';const name=document.createElement('strong');name.textContent=s.name;const note=document.createElement('div');note.textContent=progress[s.id]?'Manually marked submitted on '+new Date(progress[s.id]).toLocaleDateString():'Not submitted yet';note.className='helper';const left=document.createElement('div');left.append(name,note);const mid=document.createElement('div');const b=document.createElement('span');b.className='badge';b.textContent=progress[s.id]?'✓ Submitted':'○ Pending';mid.append(b);const action=document.createElement('button');action.className='compact';action.textContent='Open site ↗';action.addEventListener('click',()=>window.open(s.auto==='prefill'?craftUrl():s.url,'_blank','noopener,noreferrer'));line.append(left,mid,action);r.append(line)}}
+function view(v){document.querySelectorAll('.section').forEach(e=>e.classList.toggle('show',e.id===v));document.querySelectorAll('nav button').forEach(e=>e.classList.toggle('active',e.dataset.view===v));const titles={overview:'Advertising overview',campaign:'Campaign builder',directory:'Advertising websites',auto:'Automatic advertiser',tracking:'Listing tracker',updates:'Website updates'};el('pageTitle').textContent=titles[v]||'Advertising overview';window.scrollTo({top:0,behavior:'instant'})}
+for(const b of document.querySelectorAll('nav button'))b.addEventListener('click',()=>view(b.dataset.view));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.go)));
+for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('selected',x===b));render()});
+el('saveCampaign').addEventListener('click',async()=>{const data=getData();if(!data.serverIp||!data.serverName||!validPort(data.javaPort)||!validPort(data.bedrockPort)){notify('Enter a name, server IP, and valid ports 1–65535');return}settings=data;store('ugnSettings',settings);render();try{await api('/api/campaign','PUT',data);notify('Campaign saved to the automatic sender')}catch(e){notify('Saved in browser only — '+e.message)}});
+el('resetForm').addEventListener('click',async()=>{putData(DEFAULTS);settings={...DEFAULTS};store('ugnSettings',settings);render();try{await api('/api/campaign','PUT',settings);notify('Default campaign restored')}catch(e){notify('Defaults restored locally; backend is offline')}});
+el('adStyle').addEventListener('change',updatePreview);for(const k of Object.keys(DEFAULTS))el(k).addEventListener('input',updatePreview);
+el('copyAd').addEventListener('click',()=>copy(el('adPreview').textContent));el('copyIp').addEventListener('click',()=>copy(settings.serverIp));
+el('downloadAd').addEventListener('click',()=>download('ugn-advertisement.txt',el('adPreview').textContent,'text/plain'));
+function download(name,contents,type){const a=document.createElement('a');const url=URL.createObjectURL(new Blob([contents],{type}));a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+el('exportProgress').addEventListener('click',()=>{const csv='Website,Status,Recorded At,URL\n'+SITES.map(s=>[s.name,progress[s.id]?'Submitted':'Pending',progress[s.id]||'',s.url].map(x=>'"'+String(x).replaceAll('"','""')+'"').join(',')).join('\n');download('ugn-advertising-tracker.csv',csv,'text/csv')});
+putData(settings);render();
+
+// Server-backed schedule controls. Other directory/listing functionality still works offline.
+let autoData=null;
+async function api(route,method='GET',body){
+  let response;
+  try {response=await fetch(route,{method,headers:{...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});}catch{throw Error('scheduler server is not running')}
+  let data;try{data=await response.json()}catch{throw Error('unexpected server response')}
+  if(!response.ok)throw Error(data.error||`HTTP ${response.status}`);
+  return data;
+}
+function autoOn(){el('intervalFields').hidden=el('scheduleMode').value!=='interval';el('weeklyFields').hidden=el('scheduleMode').value!=='weekly'}
+el('scheduleMode').addEventListener('change',autoOn);
+function scheduleFromFields(){return {mode:el('scheduleMode').value,every:Number(el('scheduleEvery').value),unit:el('scheduleUnit').value,days:[...document.querySelectorAll('input[name="weekDay"]:checked')].map(x=>Number(x.value)),time:el('scheduleTime').value,timeZone:el('timeZone').value}}
+function applySchedule(s){el('scheduleMode').value=s.mode;el('scheduleEvery').value=s.every;el('scheduleUnit').value=s.unit;el('scheduleTime').value=s.time;el('timeZone').value=s.timeZone;if(![...el('timeZone').options].some(o=>o.value===s.timeZone))el('timeZone').value='America/New_York';document.querySelectorAll('input[name="weekDay"]').forEach(x=>{x.checked=s.days.includes(Number(x.value))});autoOn()}
+function dateText(iso){if(!iso)return 'Not scheduled';try{return new Date(iso).toLocaleString([],{dateStyle:'medium',timeStyle:'short'})}catch{return iso}}
+function webhookRow(ch){
+  const div=document.createElement('div');div.className='webhook';
+  const data=document.createElement('div');const name=document.createElement('strong');name.textContent=ch.name+(ch.enabled?'':' (disabled)');const mask=document.createElement('small');mask.textContent=ch.masked;data.append(name,mask);
+  const actions=document.createElement('div');actions.className='actions';
+  const test=document.createElement('button');test.className='compact';test.textContent='Send test';test.disabled=!ch.enabled;
+  test.addEventListener('click',async()=>{if(!confirm(`Send one clearly labeled test advertisement to ${ch.name}?`))return;test.disabled=true;try{const r=await api('/api/test','POST',{channelId:ch.id});notify(`Test: ${r.sent} sent, ${r.failed} failed`)}catch(e){notify('Test failed: '+e.message)}finally{await refreshAuto();test.disabled=false}});
+  const remove=document.createElement('button');remove.className='compact';remove.textContent='Remove';
+  remove.addEventListener('click',async()=>{if(!confirm(`Remove ${ch.name} from the auto advertiser?`))return;try{await api('/api/channels/'+encodeURIComponent(ch.id),'DELETE');notify('Channel removed');await refreshAuto()}catch(e){notify(e.message)}});
+  const toggle=document.createElement('button');toggle.className='compact';toggle.textContent=ch.enabled?'Disable':'Enable';
+  toggle.addEventListener('click',async()=>{try{await api('/api/channels/'+encodeURIComponent(ch.id),'PATCH',{enabled:!ch.enabled});notify(ch.enabled?'Channel disabled':'Channel enabled');await refreshAuto()}catch(e){notify(e.message)}});
+  actions.append(test,toggle,remove);div.append(data,actions);return div;
+}
+function logRow(entry){const row=document.createElement('div');row.className='logentry';const col1=document.createElement('div');const when=document.createElement('strong');when.textContent=dateText(entry.at);const more=document.createElement('small');more.textContent=entry.trigger;col1.append(when,document.createElement('br'),more);const body=document.createElement('div');const channel=document.createElement('strong');channel.textContent=entry.channel;const msg=document.createElement('div');msg.textContent=entry.message;msg.className='helper';body.append(channel,msg);const badge=document.createElement('span');badge.className='pill '+entry.result;badge.textContent=entry.result;row.append(col1,body,badge);return row}
+function autoContent(c){
+ return `🌌 **${c.serverName}** 🌌\n\n${c.serverDesc}\n\n☕ Java: ${c.serverIp}:${c.javaPort}\n🎮 Bedrock: ${c.serverIp}:${c.bedrockPort}${c.discord?'\n💬 Discord: '+c.discord:''}${c.website?'\n🌐 Website: '+c.website:''}\n\n✨ Join our Minecraft community!`.slice(0,1900);
+}
+function renderAuto(data){
+  const s=data.schedule;
+  el('autoMessagePreview').textContent=autoContent(data.campaign);
+  el('autoStatus').textContent='Scheduler connected. Posts are sent only to the authorized webhooks listed below.';el('autoStatus').className='autostatus online';
+  el('connectionStatus').textContent='Scheduler connected';
+  el('autoState').textContent=s.enabled?'Active':'Paused';el('autoState').style.color=s.enabled?'#82e6c1':'';
+  el('nextPost').textContent=s.nextAt?dateText(s.nextAt):'Not scheduled';el('nextZone').textContent=s.mode==='weekly'?s.timeZone:'Interval schedule';
+  el('channelCount').textContent=data.channels.length;el('autoSent').textContent=data.stats.sent;el('statAuto').textContent=data.stats.sent;
+  el('toggleSchedule').disabled=false;el('toggleSchedule').textContent=s.enabled?'Pause automatic posts':'Start automatic posts';
+  const list=el('webhookList');list.replaceChildren();
+  if(!data.channels.length){const p=document.createElement('p');p.className='helper';p.textContent='No channels connected. Add an authorized Discord webhook above.';list.append(p)}else list.replaceChildren(...data.channels.map(webhookRow));
+  const logs=el('deliveryLogs');logs.replaceChildren();
+  if(data.logs.length)logs.replaceChildren(...data.logs.map(logRow));else {const p=document.createElement('p');p.className='helper';p.textContent='No delivery attempts yet.';logs.append(p)}
+}
+async function refreshAuto(initial=false){
+ try{const data=await api('/api/state');autoData=data;if(initial){settings=data.campaign;store('ugnSettings',settings);putData(settings);render();applySchedule(data.schedule)}renderAuto(data)}
+ catch(e){el('autoStatus').textContent='Scheduler offline — open this website from http://127.0.0.1:3000 after running server.js. File-only previews cannot send automatically.';el('autoStatus').className='autostatus offline';el('connectionStatus').textContent='Scheduler offline';el('toggleSchedule').disabled=true;}
+}
+el('refreshAuto').addEventListener('click',()=>refreshAuto());el('refreshLogs').addEventListener('click',()=>refreshAuto());
+el('saveSchedule').addEventListener('click',async()=>{
+ try {await api('/api/schedule','PUT',scheduleFromFields());notify('Custom schedule saved');await refreshAuto()}
+ catch(e){notify('Cannot save: '+e.message)}
+});
+el('toggleSchedule').addEventListener('click',async()=>{
+ if(!autoData)return;
+ const enable=!autoData.schedule.enabled;
+ if(enable && !confirm('Start sending the saved campaign to every connected and permitted Discord webhook on your chosen schedule?'))return;
+ try{await api('/api/activate','POST',{enabled:enable});notify(enable?'Automatic posting started':'Automatic posting paused');await refreshAuto()}
+ catch(e){notify('Could not change schedule: '+e.message)}
+});
+el('newChannelForm').addEventListener('submit',async e=>{
+ e.preventDefault();const btn=el('addWebhook');btn.disabled=true;
+ try{await api('/api/channels','POST',{name:el('webhookName').value,url:el('webhookUrl').value,permissionConfirmed:el('permissionConfirmed').checked});el('webhookName').value='';el('webhookUrl').value='';el('permissionConfirmed').checked=false;notify('Discord webhook connected');await refreshAuto()}
+ catch(err){notify('Could not connect: '+err.message)}finally{btn.disabled=false}
+});
+setInterval(()=>{if(!document.hidden)refreshAuto()},30000);
+
+// GitHub release update management. Only the local Windows launcher may install updates.
+let updateState=null;
+let discoveredRelease=null;
+function updateNotice(message,style=''){
+  const e=el('updateMessage');e.textContent=message;e.className='update-message '+style;
+}
+function updateButtons(){
+  const allowed=!!updateState?.canInstall;
+  el('saveUpdateRepo').disabled=!allowed;
+  el('checkUpdate').disabled=!allowed;
+  el('installUpdate').disabled=!allowed||!discoveredRelease?.available;
+}
+async function refreshUpdate(){
+  try {
+    updateState=await api('/api/update/status');
+    el('installedVersion').textContent='v'+updateState.version;
+    el('githubRepo').value=updateState.repository||'';
+    discoveredRelease=null;updateButtons();
+    if(!updateState.canInstall){updateNotice('To enable one-click updates, run this website on a Windows PC by double-clicking start_windows.bat, then open http://127.0.0.1:3000.','warn');}
+    else if(!updateState.repository){updateNotice('First, enter your own trusted public GitHub repository and click Save GitHub repository.');}
+    else{updateNotice('Ready. Click Check for updates to look for a published GitHub release.');}
+    if(updateState.lastResult){
+      const r=updateState.lastResult;
+      el('latestUpdate').textContent=(r.success?'Last update succeeded: ':'Last update failed: ')+r.message;
+      if(r.success) updateNotice(r.message,'good');
+    }
+  } catch(e) {
+    el('installedVersion').textContent='—';
+    updateState=null;discoveredRelease=null;updateButtons();
+    updateNotice('The server is offline. Open the dashboard using start_windows.bat.','warn');
+  }
+}
+el('refreshUpdate').addEventListener('click',refreshUpdate);
+el('saveUpdateRepo').addEventListener('click',async()=>{
+  const repo=el('githubRepo').value.trim();
+  try{
+    await api('/api/update/config','PUT',{repository:repo});
+    await refreshUpdate();notify('Trusted GitHub repository saved');
+  }catch(e){updateNotice(e.message,'warn')}
+});
+el('checkUpdate').addEventListener('click',async()=>{
+  const btn=el('checkUpdate');btn.disabled=true;
+  updateNotice('Checking the latest stable published GitHub release…');
+  try{
+    const result=await api('/api/update/check');
+    discoveredRelease=result.release;
+    el('latestUpdate').textContent=`GitHub release v${result.release.version} · Installed v${result.version}`;
+    if(result.release.available){updateNotice(`Update v${result.release.version} is available. Review your trusted release, then click Install update & restart.`,'good')}
+    else{updateNotice('You already have the latest published version.','good')}
+  }catch(e){discoveredRelease=null;updateNotice('Could not check GitHub: '+e.message,'warn')}
+  finally{updateButtons()}
+});
+el('installUpdate').addEventListener('click',async()=>{
+  if(!discoveredRelease?.available)return;
+  if(!confirm(`Install trusted GitHub update v${discoveredRelease.version}? The dashboard will restart; your scheduled ads and webhook settings will be preserved.`))return;
+  el('installUpdate').disabled=true;
+  try{
+    const result=await api('/api/update/install','POST',{confirm:true});
+    updateNotice(result.message+' The browser may temporarily disconnect; refresh once the dashboard returns.','good');
+    notify('Windows updater is starting');
+  }catch(e){updateNotice('Update could not start: '+e.message,'warn');updateButtons()}
+});
+refreshUpdate();
+refreshAuto(true);
+})();
+</script>
+</body>
+</html>
