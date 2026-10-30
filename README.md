@@ -1,42 +1,42 @@
 # Universal Gaming Network — Advertising Command Center
 
-Current source version: **3.1.0**
+**Source version: v3.2.0** • Node.js 22+ • Windows local dashboard
 
-## What's new in v3.1.0
+A local campaign-management dashboard for Universal SMP and Shattered Crown, with authorized Discord announcements, a directory of 21 Minecraft listing resources, independent project schedules, and honest campaign analytics.
 
-- **Two campaigns:** Universal SMP and Shattered Crown, with separate advertisements and submission tracking.
-- **14 Minecraft directory destinations:** including CraftRank (prefilled form), Planet Minecraft, Minecraft-MP, MinecraftServers.org, Minecraft Atlas, Minecraft.Buzz, TopG, Minecraft-ServerList, MCServer-List, Minelist, MineBuff, MCServerShare, MinecraftServer.Buzz, and MinecraftIP.
-- **Shattered Crown starts in development mode:** recruitment copy for volunteer builders and mod makers, without a fabricated server IP. Live-directory "mark submitted" buttons stay disabled until you set a live server address.
-- **Schedule safety:** switching active campaigns pauses the scheduler; resume manually after reviewing the new advertisement. Only **one** active campaign runs through the automatic Discord webhook scheduler at a time.
-- **Migration:** existing Universal SMP campaign, schedules and private webhook settings are retained in the local `data/` directory.
-- **Automated tests:** test workflow checks every new push to the main branch.
+## What changed in v3.2.0
 
-## Automatic posting limitations
+- **21 Minecraft listing resources** (previously 14), with links to their public sites and owner-help pages. Directory submissions are still manual: the app doesn't log in, submit forms, solve captchas, or bypass posting rules.
+- **Independent schedules:** Universal SMP and Shattered Crown each have a saved interval/weekday schedule, next-run countdown, enabled state and last run. Both schedules run independently even if you switch the selected project in the dashboard.
+- **Explicit webhook assignments:** A Discord channel may be approved for Universal SMP, Shattered Crown, or both. Existing v3.1 Discord channels migrate as **Universal SMP only** until you explicitly authorize Shattered Crown announcements.
+- **Safety limit:** Only one advertisement can be accepted per webhook every six hours across both campaigns; overlapping posts are logged as skipped. Use separate permitted channels if both campaigns should post independently.
+- **Campaign analytics:** Actual Discord webhook sends and failures, counts of listing-site links opened from this dashboard, and optional **manually reported** clicks and player joins. Dashboard link opens are not third-party views and manually entered outcomes are not verified automatically.
+- **Dashboard redesign:** Updated navigation and visual theme, campaign-switching tiles, independent schedule summaries, analytics bars and side-by-side campaign comparison.
+- **Migration:** The v3.1 single schedule moves to whichever campaign was active when the upgrade occurred. Previous saved advertisements, webhook URLs and existing listing tracker entries are retained. The `data/` directory is never included in release ZIPs.
 
-Automatic sends work **only for approved Discord webhooks** where the operator has posting permission. Minecraft listing destinations in the dashboard are *manual submission links*, not automatic posting integrations. Each listing service has its own rules; many require the server to be online.
+## How to use
 
-## Run locally on Windows
+1. Launch with `start_windows.bat` (do not open index.html as a file). Open http://127.0.0.1:3000.
+2. Select **Universal SMP** or **Shattered Crown** under Active campaign.
+3. Edit each campaign in **Campaign builder**. Shattered Crown defaults to *In development* and does not fabricate a live join IP.
+4. Under **Auto scheduler**, connect a Discord webhook in a channel that permits promotion and choose its approved project(s). Configure and start each campaign schedule separately.
+5. Under **Advertising sites**, open manual directory pages. Mark submitted only after successfully completing a site's requirements.
+6. Under **Analytics**, review actual Discord deliveries, directory link opens, manually recorded submissions, and optional manual click/join figures.
 
-1. Install Node.js 22 or later.
-2. Double-click `start_windows.bat`.
-3. Open `http://127.0.0.1:3000`.
-4. Use **Active campaign** at the top to switch between Universal SMP and Shattered Crown.
-5. Use **Campaign builder** to edit/save the active campaign, and **Advertising sites** to open owner-submission pages.
-6. Connect permitted Discord webhooks and review **Auto scheduler** before starting posts.
+## Safety and hosting
 
-Private state lives in `data/`, which must never be uploaded to public GitHub or deleted by updates.
+The backend can post to approved incoming Discord webhooks only. **It does not automatically publish to Minecraft listing sites.** Each site's owner-verification and promotional rules apply.
 
-## Publish version v3.1.0 to Windows installations
+This local desktop website only schedules posts while the computer and Node.js backend are running. It does not measure actual player referrals without user-supplied metrics. To track real referrals automatically, you would need site/server-integrated data or publicly hosted redirect infrastructure designed with privacy protections.
 
-All website code is committed to GitHub, but a release isn't available until one is published:
+Keep `data/`, webhook URLs, `.env`, `node_modules/`, and passwords out of public GitHub.
 
-1. Open this repository's **Releases → Draft a new release**.
-2. Create tag `v3.1.0` on branch `main`. The version tag **must match** `package.json`.
-3. Publish the release, then check **Actions → Package UGN website updates**.
-4. A successful run adds `ugn-auto-advertiser.zip` to the published release.
-5. In your *existing* v3.0.0 Windows dashboard, go to **Website updates**, save this trusted public GitHub repository (`aaronnalle08-ops/Set-the-repository-name-to`), then choose **Check for updates → Install update & restart**.
-6. The updater backs up program files and preserves `data/`, including your prior Universal SMP settings.
+## Upgrade from v3.1.0
 
-More details: [GITHUB_UPDATE_SETUP.md](GITHUB_UPDATE_SETUP.md).
+1. Publish release tag **`v3.2.0`** from the latest `main` commit after all tests pass.
+2. Verify the **Package UGN website updates** Actions job succeeds and attaches `ugn-auto-advertiser.zip`.
+3. Back up your local `data/` folder.
+4. Run your existing v3.1.0 website with `start_windows.bat`. Select **Website updates → Check for updates → Install update & restart**.
+5. Review both schedules and channel-to-campaign assignments after upgrading. The original schedule remains with its v3.1 active project.
 
-Do not commit passwords, Discord webhook URLs, `data/`, `.env`, or `node_modules/`. Public listing sites should receive only truthful claims about live servers.
+[Detailed GitHub updater guide](GITHUB_UPDATE_SETUP.md).
