@@ -43,6 +43,7 @@ test('separate campaigns preserve UGN changes and pause live schedules on switch
  assert.match(r.data.campaigns.shattered.serverDesc,/Recruiting Shattered Crown/);
  r=await api('/api/campaign/active','PUT',{campaignId:'shattered'});
  assert.equal(r.status,200);
+ r=await api('/api/state');
  r=await api('/api/campaign','PUT',{...r.data.campaigns.universal,serverStatus:'live',serverIp:''});
  assert.equal(r.status,400);
 });
