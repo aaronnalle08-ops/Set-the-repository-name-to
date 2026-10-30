@@ -2,11 +2,11 @@
 
 **Source version: v3.2.0** • Node.js 22+ • Windows local dashboard
 
-A local campaign-management dashboard for Universal SMP and Shattered Crown, with authorized Discord announcements, a directory of 21 Minecraft listing resources, independent project schedules, and honest campaign analytics.
+A local campaign-management dashboard for Universal SMP and Shattered Crown, with authorized Discord announcements, a directory of 25 Minecraft listing resources, independent project schedules, and honest campaign analytics.
 
 ## What changed in v3.2.0
 
-- **21 Minecraft listing resources** (previously 14), with links to their public sites and owner-help pages. Directory submissions are still manual: the app doesn't log in, submit forms, solve captchas, or bypass posting rules.
+- **25 Minecraft listing resources** (previously 14), with links to their public sites and owner-help pages. Directory submissions are still manual: the app doesn't log in, submit forms, solve captchas, or bypass posting rules.
 - **Independent schedules:** Universal SMP and Shattered Crown each have a saved interval/weekday schedule, next-run countdown, enabled state and last run. Both schedules run independently even if you switch the selected project in the dashboard.
 - **Explicit webhook assignments:** A Discord channel may be approved for Universal SMP, Shattered Crown, or both. Existing v3.1 Discord channels migrate as **Universal SMP only** until you explicitly authorize Shattered Crown announcements.
 - **Safety limit:** Only one advertisement can be accepted per webhook every six hours across both campaigns; overlapping posts are logged as skipped. Use separate permitted channels if both campaigns should post independently.
@@ -40,3 +40,5 @@ Keep `data/`, webhook URLs, `.env`, `node_modules/`, and passwords out of public
 5. Review both schedules and channel-to-campaign assignments after upgrading. The original schedule remains with its v3.1 active project.
 
 [Detailed GitHub updater guide](GITHUB_UPDATE_SETUP.md).
+
+Directory v3.2 also includes ListMC, GameMonitoring, MinecraftServersList.net, and MCCompanion owner-submission resources.
