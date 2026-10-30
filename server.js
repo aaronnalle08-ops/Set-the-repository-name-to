@@ -17,14 +17,20 @@ const DEFAULT_CAMPAIGN = {
   serverName: 'Universal Gaming Network — Universal SMP',
   serverIp: 'play.universalgaming.us', javaPort: '25565', bedrockPort: '19132',
   serverDesc: 'A community-driven survival Minecraft network with Java & Bedrock crossplay. Grind, explore, build, and survive with custom furniture, plushies, armor, tools, seasonal content, an economy, jobs, and more. Play solo or with friends!',
-  discord: '', website: ''
+  discord: '', website: '', serverStatus:'live'
 };
+const DEFAULT_SHATTERED = {
+  serverName:'Shattered Crown', serverIp:'', javaPort:'25565', bedrockPort:'19132',
+  serverDesc:'Shattered Crown is an in-development Minecraft kingdom-building project with upgradeable blueprint buildings, research, resource production, castles, and warfare. We are looking for volunteer builders and mod creators to help bring it to life.',
+  discord:'', website:'', serverStatus:'development'
+};
+const CAMPAIGN_IDS=['universal','shattered'];
 const DEFAULT_SCHEDULE = {
   enabled: false, mode: 'interval', every: 6, unit: 'hours',
   days: [1, 3, 5], time: '18:00', timeZone: 'America/New_York',
   nextAt: null, lastAt: null
 };
-const DEFAULT_STATE = {campaign: DEFAULT_CAMPAIGN, schedule: DEFAULT_SCHEDULE, channels: [], logs: [], stats: {sent: 0, failed: 0}};
+const DEFAULT_STATE = {campaign:DEFAULT_CAMPAIGN, campaigns:{universal:DEFAULT_CAMPAIGN,shattered:DEFAULT_SHATTERED},activeCampaign:'universal', schedule:DEFAULT_SCHEDULE, channels:[],logs:[],stats:{sent:0,failed:0}};
 
 function validWebhook(input) {
   try {
@@ -84,15 +90,31 @@ function computeNext(sched, from = Date.now()) {
   throw Error('Could not calculate the next local posting time.');
 }
 function formatMessage(c) {
-  const msg = `🌌 **${c.serverName}** 🌌\n\n${c.serverDesc}\n\n☕ Java: ${c.serverIp}:${c.javaPort}\n🎮 Bedrock: ${c.serverIp}:${c.bedrockPort}${c.discord ? '\n💬 Discord: '+c.discord : ''}${c.website ? '\n🌐 Website: '+c.website : ''}\n\n✨ Join our Minecraft community!`;
-  return msg.slice(0, 1900);
+  const lines = ['🌌 **'+c.serverName+'** 🌌', '', c.serverDesc,''];
+  if (c.serverStatus==='development') {
+    lines.push('🛠️ In development — seeking volunteer builders and mod creators. Not open for public joining yet.');
+  } else {
+    lines.push('☕ Java: '+c.serverIp+':'+c.javaPort,'🎮 Bedrock: '+c.serverIp+':'+c.bedrockPort);
+  }
+  if(c.discord)lines.push('💬 Discord: '+c.discord);
+  if(c.website)lines.push('🌐 Website: '+c.website);
+  lines.push('','✨ Join the community and follow our progress!');
+  return lines.join('\n').slice(0,1900);
 }
 function readState() {
   try {
-    const s = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    return {...DEFAULT_STATE, ...s, campaign:{...DEFAULT_CAMPAIGN,...s.campaign}, schedule:{...DEFAULT_SCHEDULE,...s.schedule},channels:Array.isArray(s.channels)?s.channels:[],logs:Array.isArray(s.logs)?s.logs:[],stats:{...DEFAULT_STATE.stats,...s.stats}};
+    const s=JSON.parse(fs.readFileSync(DATA_FILE,'utf8'));
+    const activeCampaign=CAMPAIGN_IDS.includes(s.activeCampaign)?s.activeCampaign:'universal';
+    const saved=s.campaigns||{};
+    const campaigns={
+      universal:{...DEFAULT_CAMPAIGN,...(saved.universal || s.campaign || {})},
+      shattered:{...DEFAULT_SHATTERED,...(saved.shattered||{})}
+    };
+    return {...DEFAULT_STATE,...s,activeCampaign,campaigns,campaign:campaigns[activeCampaign],
+      schedule:{...DEFAULT_SCHEDULE,...s.schedule},channels:Array.isArray(s.channels)?s.channels:[],
+      logs:Array.isArray(s.logs)?s.logs:[],stats:{...DEFAULT_STATE.stats,...s.stats}};
   } catch(e) {
-    if (e.code !== 'ENOENT') throw e;
+    if(e.code!=='ENOENT')throw e;
     return structuredClone(DEFAULT_STATE);
   }
 }
@@ -103,7 +125,7 @@ function persist(s) {
   fs.renameSync(temp,DATA_FILE);
 }
 function infoForClient(s, active) {
-  return {campaign:s.campaign, schedule:s.schedule, channels:s.channels.map(x=>({id:x.id,name:x.name,enabled:x.enabled,masked:'Discord webhook saved ••••'+x.url.slice(-5)})),logs:s.logs.slice(-65),stats:s.stats, busy:active};
+  return {campaign:s.campaign, activeCampaign:s.activeCampaign, campaigns:s.campaigns, schedule:s.schedule, channels:s.channels.map(x=>({id:x.id,name:x.name,enabled:x.enabled,masked:'Discord webhook saved ••••'+x.url.slice(-5)})),logs:s.logs.slice(-65),stats:s.stats, busy:active};
 }
 function createApp(options = {}) {
   const state = options.initialState ? structuredClone(options.initialState) : readState();
@@ -241,12 +263,27 @@ function createApp(options = {}) {
         return;
       }
 
+      if(req.method==='PUT' && route==='/api/campaign/active') {
+        const body=await readBody(req);
+        if(!CAMPAIGN_IDS.includes(body.campaignId))throw Error('Choose Universal SMP or Shattered Crown.');
+        const changed=body.campaignId!==state.activeCampaign;
+        state.activeCampaign=body.campaignId;
+        state.campaign=state.campaigns[state.activeCampaign];
+        if(changed && state.schedule.enabled) {
+          state.schedule.enabled=false;state.schedule.nextAt=null;
+          appendLog({channel:'Scheduler',trigger:'control',result:'paused',message:'Paused automatically after switching campaigns; restart when ready'});
+        }
+        write();return json(res,200,{ok:true,activeCampaign:state.activeCampaign,paused:changed});
+      }
       if(req.method==='PUT' && route==='/api/campaign') {
         const body=await readBody(req);
         const c={};
         for(const k of Object.keys(DEFAULT_CAMPAIGN)) c[k]=String(body[k]??'').trim().slice(0,k==='serverDesc'?1200:250);
-        if(!c.serverName||!c.serverIp||!/^[\w.-]{1,250}$/.test(c.serverIp) || !c.serverDesc || ![c.javaPort,c.bedrockPort].every(x=>/^\d{1,5}$/.test(x)&&Number(x)>0&&Number(x)<65536)) throw Error('Campaign requires server name, valid address, ports and description.');
-        state.campaign=c;write();return json(res,200,{ok:true});
+        if(!c.serverName||!c.serverDesc || !['live','development'].includes(c.serverStatus))throw Error('Campaign requires a name, description and valid status.');
+        if(c.serverStatus==='live' && (!c.serverIp||!/^[\w.-]{1,250}$/.test(c.serverIp)||![c.javaPort,c.bedrockPort].every(x=>/^\d{1,5}$/.test(x)&&Number(x)>0&&Number(x)<65536))) throw Error('Live campaigns need a valid Minecraft server address and ports.');
+        if(c.serverIp && !/^[\w.-]{1,250}$/.test(c.serverIp)) throw Error('Enter a valid Minecraft server hostname.');
+        state.campaigns[state.activeCampaign]=c;
+        state.campaign=c;write();return json(res,200,{ok:true,activeCampaign:state.activeCampaign});
       }
       if(req.method==='POST' && route==='/api/channels') {
         const body=await readBody(req);
