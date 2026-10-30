@@ -1,41 +1,30 @@
-# UGN Advertising Command Center — GitHub Update Setup
+# GitHub release updater — v3.2.0
 
-## Fix: release titled v3.1.0 but tagged main
+Repository: `aaronnalle08-ops/Set-the-repository-name-to`
 
-If the release is named `v3.1.0` but shows `main` as the **tag**, the Windows updater cannot install it.
+## Upgrade from v3.1.0 to v3.2.0
 
-1. Go to [Draft a new release](https://github.com/aaronnalle08-ops/Set-the-repository-name-to/releases/new).
-2. In **Choose a tag**, type **`v3.1.0`** (not `main`). Choose **Create new tag: v3.1.0 on publish** with `main` as its target branch.
-3. Set release title to `UGN Advertising Command Center v3.1.0`, then click **Publish release**.
-4. Go to the [Actions tab](https://github.com/aaronnalle08-ops/Set-the-repository-name-to/actions). Wait for **Package UGN website updates** to finish. The release needs an attached `ugn-auto-advertiser.zip`.
-5. If the release-packaging job doesn't start automatically, open that workflow and click **Run workflow**, choose branch `main`, and enter `v3.1.0` in its **release_tag** input.
-6. Return to your installed UGN v3.0.0 dashboard under **Website updates**. Use **Check for updates** and **Install update & restart**.
+Your existing Windows updater can install this version when a correct GitHub release exists.
 
-You **do not have to delete the incorrectly tagged release** to publish a new release with the proper tag. Do not delete your `main` branch or its files.
+1. Review the latest **Test UGN website changes** run in the GitHub Actions tab and ensure all tests pass.
+2. Create a new GitHub **release** from `main`; the **tag** must be exactly `v3.2.0`, not `main`. The release *name* can be `UGN Advertising Command Center v3.2.0`.
+3. In the GitHub Actions tab confirm **Package UGN website updates** succeeds. It attaches `ugn-auto-advertiser.zip` automatically to the correct tagged release. If necessary, manually run the packaging workflow with `release_tag=v3.2.0`.
+4. Make a backup of your local `data/` directory. Do not delete it.
+5. On Windows, open `start_windows.bat`, then visit http://127.0.0.1:3000 and select **Website updates**.
+6. Check that the trusted repository is `aaronnalle08-ops/Set-the-repository-name-to`. Click **Check for updates** then **Install update & restart**.
+7. Verify **Installed website version: v3.2.0**.
 
-## Upgrade an existing v3.0.0 Windows installation to v3.1.0
+## Migration and safety
 
-The local website is on version **3.0.0** until it installs a newer published release. The GitHub source files have already been updated to **3.1.0**.
+- Existing campaigns and private Discord webhook URLs stay under `data/` and are not overwritten by GitHub ZIPs.
+- The v3.1 shared schedule is moved to the project that was selected at upgrade time. The other project's schedule starts paused.
+- Both project schedules can now run independently, but **existing Discord channels are assigned to Universal SMP only** until you explicitly approve them for Shattered Crown.
+- Both schedules can share a Discord webhook only with explicit permission. A six-hour minimum interval per destination prevents duplicate posts when schedules overlap. Suppressed sends appear as `skipped` in the delivery history.
+- Listing submissions are **manual**. Analytics do not claim to measure genuine player visits to third-party directories. Manual click/join totals must be entered from real measurements.
+- Your computer and Node backend must be running for scheduled posts to send.
 
-1. Open the repository's **Releases → Draft a new release** page.
-2. Create a **new tag `v3.1.0`** from the latest `main` commit and publish it. You do **not** need to release v3.0.0 first.
-3. Open **Actions → Package UGN website updates** and confirm the release job succeeds. It should attach `ugn-auto-advertiser.zip` to the release.
-4. Back up your Windows installation's `data/` folder first.
-5. On Windows, open the v3 website using `start_windows.bat` and browse to `http://127.0.0.1:3000`.
-6. Under **Website updates**, save the trusted public repository `aaronnalle08-ops/Set-the-repository-name-to`, then select **Check for updates**.
-7. Confirm the version shown is **3.1.0**, then select **Install update & restart**. The updater validates the GitHub SHA-256 asset digest and preserves the local `data/` folder.
+## Future updates
 
-The upgrade adds **14 Minecraft listing links** and a separate **Shattered Crown** campaign. Your existing Universal SMP data should be migrated automatically. Shattered Crown is initially **in development**, so add a real reachable IP and switch the status to live before listing it as a playable public server.
+Change source, bump `package.json` to a newer version, run `npm test`, check GitHub Actions, publish a matching `vX.Y.Z` release, and use the in-app Update button. Protect your GitHub account with 2FA and never upload the private `data/` directory, Discord webhook URLs, `.env`, or tokens.
 
-## Publish later updates
-
-1. Edit your project source code on GitHub or locally and push it to `main`.
-2. Run `npm test`, and check **Actions → Test UGN website changes** for success.
-3. Increase `package.json` from `3.1.0` to a higher version, for example `3.2.0`.
-4. Publish a stable GitHub release tagged `v3.2.0`, referencing that updated commit.
-5. Wait for **Package UGN website updates** to succeed and attach `ugn-auto-advertiser.zip`.
-6. On the Windows dashboard, click **Check for updates → Install update & restart**.
-
-**Important:** Do not upload your private `data/` directory, `.env`, secrets, Discord webhook URLs, or `node_modules/` to GitHub. The `.gitignore` helps with Git-based pushes but **not** uploads via the GitHub web interface.
-
-Automatic advertising only sends to approved Discord webhook channels. Directory submissions remain assisted manual tasks. Only **one active campaign** is scheduled at once, and switching campaigns automatically pauses the scheduler. Your computer must be running to post automatically; online 24/7 scheduling requires hosting the backend.
+**Important:** If the release is titled `v3.2.0` but tagged `main`, the updater will not recognize it. Choose **Create new tag: v3.2.0 on publish**, with `main` only as the target branch.

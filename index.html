@@ -21,6 +21,26 @@
   @media(max-width:1000px){.shell{grid-template-columns:80px 1fr}aside{padding:21px 12px}.brand{justify-content:center}.brand .bn,nav button .label,.sidebar-note{display:none}nav button{justify-content:center;padding:12px}.stats{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:650px){.shell{grid-template-columns:1fr}aside{padding:10px 15px;flex-direction:row;align-items:center;gap:10px;position:sticky;top:0;z-index:5} .brand{border:0;padding:0}.brand .bn{display:none}nav{display:flex;gap:3px;flex:1;justify-content:flex-end}nav button{padding:7px} .sidebar-note{display:none} main{padding:20px 14px 42px}.top{margin-bottom:17px}.top h1{font-size:22px}.status{display:none}.hero{padding:24px 20px}.hero h2{font-size:26px}.stats{gap:8px}.stat{padding:14px}.stat strong{font-size:23px}.platforms,.two{grid-template-columns:1fr}.headrow{align-items:start}.headrow h2{font-size:18px}.schedule-row{grid-template-columns:1fr 1fr}.schedule-row>div:nth-child(2){grid-row:2;grid-column:1/-1}}
 
+  /* v3.2 command center design */
+  :root{--bg:#07111f;--panel:#101f32;--stroke:#2c4158;--cyan:#6ceadd;--blue:#76a9ff}
+  .shell{max-width:1600px;grid-template-columns:255px 1fr}
+  aside{background:linear-gradient(180deg,#101e32,#0a1726);position:sticky;top:0;height:100vh}
+  .brand{padding-top:13px}.emblem{font-size:23px;padding:13px 15px}
+  .top{background:linear-gradient(110deg,#112a40,#0e1d31);border:1px solid #294965;border-radius:18px;padding:22px 24px}
+  .top h1{font-size:30px}.hero{background:linear-gradient(125deg,#174f5e,#203b65 55%,#1b2542);padding:36px}
+  .hero::after{content:'✧';right:46px;top:-95px;font-size:270px}
+  .stat{background:linear-gradient(140deg,#172c42,#0e1b2d);box-shadow:0 12px 30px #0002}
+  .site{transition:transform .15s,border-color .15s}.site:hover{transform:translateY(-2px);border-color:#579eae}
+  button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+  .campaign-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0 20px}
+  .campaign-tile{background:#11273a;border:1px solid #3b5b70;border-radius:13px;padding:17px;text-align:left;color:#dcefff;cursor:pointer}
+  .campaign-tile.selected{border-color:#55dbcb;background:linear-gradient(125deg,#193d4b,#172d4b)}.campaign-tile strong{display:block;font-size:15px}.campaign-tile small{color:#a3c4d3}
+  .analytics-rows{display:grid;gap:13px}.analytics-row{display:grid;grid-template-columns:minmax(110px,200px) 1fr 40px;gap:12px;align-items:center;font-size:12px}
+  .bartrack{height:10px;background:#263950;border-radius:20px;overflow:hidden}.barfill{height:100%;border-radius:20px;background:linear-gradient(90deg,#67e6d6,#68aafa);min-width:2px}
+  .metric-edit{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.metric-edit .field{flex:1;min-width:170px;margin-bottom:0}
+  .section-lede{color:#b9cfe3;margin:0 0 19px;max-width:850px}
+  @media(max-width:1000px){aside{position:static;height:auto}.shell{grid-template-columns:80px 1fr}}
+  @media(max-width:650px){.shell{grid-template-columns:1fr}.campaign-strip{grid-template-columns:1fr}.top{padding:16px}}
   .update-message{border:1px solid #365269;border-radius:11px;padding:14px 16px;background:#102a3b;color:#c9eaf5;margin:12px 0;font-size:13px;overflow-wrap:anywhere}.update-message.good{background:#143c31;border-color:#2e7c65;color:#c5fae5}.update-message.warn{background:#433228;border-color:#946d44;color:#ffe0bc}.update-actions{display:flex;gap:10px;flex-wrap:wrap}.update-actions button{min-width:150px}.update-actions button:disabled{opacity:.5;cursor:not-allowed} .update-field{max-width:610px}.update-version{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}.update-version strong{font-size:23px;color:#94edf1}
   .autostatus{padding:12px 16px;background:#152637;border:1px solid #30546b;border-radius:12px;color:#c7e3f0;font-size:13px;margin-bottom:17px}.autostatus.online{background:#103c32;border-color:#226959;color:#bcfbe8}.autostatus.offline{background:#402f30;border-color:#805756;color:#f6d3c9}
   .smallstat{font-size:15px!important;line-height:1.5!important;overflow-wrap:anywhere}.cardtitle{font-size:17px;letter-spacing:-.025em;margin:0 0 16px}.autobuttons{display:flex;gap:10px;flex-wrap:wrap}.autobuttons button{flex:1}.autobuttons button:disabled{opacity:.45;cursor:not-allowed}.permission{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#c4d7e5;line-height:1.6;margin:0 0 17px}.permission input{margin-top:3px;accent-color:#49ddd9}.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.days label{font-size:12px;display:flex;flex-direction:column;gap:7px;align-items:center;color:#b7cde0;border:1px solid #345069;background:#0d192a;border-radius:9px;padding:8px 2px}.days input{width:16px;height:16px;accent-color:#49ddd9}.webhooklist{margin-top:18px;border-top:1px solid var(--stroke);padding-top:10px;display:grid;gap:12px}.webhook{border:1px solid #355069;background:#0c1a2a;border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.webhook small{display:block;color:#819aaf}.webhook .actions{display:flex;gap:6px;flex-wrap:wrap}.loglist{max-height:370px;overflow:auto}.logentry{border-bottom:1px solid var(--stroke);display:grid;grid-template-columns:155px 1fr auto;gap:12px;align-items:start;padding:11px 3px;font-size:12px}.logentry small{color:#819aaf}.pill{border-radius:100px;padding:3px 8px;background:#274158;color:#c5f0ff}.pill.sent,.pill.enabled{background:#214c40;color:#abf2d6}.pill.failed{background:#502c36;color:#ffc0cc}.pill.paused,.pill.skipped{background:#514029;color:#f9d8a0}
@@ -37,6 +57,7 @@
     <button data-view="directory"><span class="sym">⌁</span><span class="label">Advertising sites</span></button>
     <button data-view="auto"><span class="sym">◷</span><span class="label">Auto scheduler</span></button>
     <button data-view="tracking"><span class="sym">☷</span><span class="label">Listing tracker</span></button>
+     <button data-view="analytics"><span class="sym">▤</span><span class="label">Analytics</span></button>
     <button data-view="updates"><span class="sym">⟳</span><span class="label">Website updates</span></button>
   </nav>
   <div class="sidebar-note"><strong>Important</strong><p>Automated posting works only with incoming webhooks for channels you control or may promote in. Minecraft listing sites still need approved integrations or manual submissions.</p></div>
@@ -44,8 +65,9 @@
 <main>
   <div class="top"><div><span class="eyebrow">Universal Gaming Network</span><h1 id="pageTitle">Advertising overview</h1><label class="helper" for="campaignPicker" style="display:inline-block;margin-top:10px;margin-right:10px">Active campaign</label><select id="campaignPicker" style="background:#13283c;color:#e5f6ff;border:1px solid #397081;border-radius:9px;padding:8px 12px"><option value="universal">Universal SMP</option><option value="shattered">Shattered Crown — in development</option></select></div><span class="status"><i></i> <span id="connectionStatus">Connecting to scheduler...</span></span></div>
   <section id="overview" class="section show">
+    <div class="campaign-strip"><button class="campaign-tile selected" data-pick="universal"><strong>🌌 Universal SMP</strong><small id="universalQuick">Survival server ads and schedule</small></button><button class="campaign-tile" data-pick="shattered"><strong>⚔️ Shattered Crown</strong><small id="shatteredQuick">Kingdom project recruiting</small></button></div>
     <div class="hero"><div class="mini">YOUR NETWORK. EVERYWHERE PLAYERS LOOK.</div><h2 id="heroTitle">Turn one great ad into a smarter campaign.</h2><p id="heroBlurb">Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.</p><div class="iprow"><span class="ip" id="heroIp">play.universalgaming.us</span><button class="primary" id="copyIp">Copy server address</button><button class="secondary" data-go="campaign">Edit your campaign</button></div></div>
-    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">5</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">5</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
+    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">21</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">21</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
     <div class="headrow"><div><h2>Recommended advertising sites</h2><p>Start with server directories that accept Minecraft server listings.</p></div><button class="secondary" data-go="directory">See all sites</button></div>
     <div class="platforms" id="overviewSites"></div>
     <p class="footnote">Tip: Most server directories require separate accounts, ownership verification, and manual confirmation. Mark a site as submitted only after you actually finish publishing on that site.</p>
@@ -74,8 +96,8 @@
   </section>
 
   <section id="auto" class="section">
-    <div class="headrow"><div><h2>Custom automatic advertising</h2><p>Schedule posts to approved Discord announcement channels. Your computer must run the backend, or you must deploy it to always-on hosting.</p></div><button class="secondary" id="refreshAuto">Refresh status</button></div>
-    <div class="autostatus" id="autoStatus" role="status">Connecting to scheduler backend…</div>
+    <div class="headrow"><div><h2>Independent automatic schedules</h2><p>Universal SMP and Shattered Crown can run concurrently on separate schedules. Use the active campaign selector to edit each schedule.</p></div><button class="secondary" id="refreshAuto">Refresh status</button></div>
+    <div class="autostatus" id="autoStatus" role="status">Connecting to scheduler backend…</div><div class="campaign-strip" id="scheduleSummary" aria-live="polite"></div><p class="section-lede">Both schedules use your approved Discord webhooks. Each webhook is capped at one promotion every six hours across both campaigns to prevent duplicate spam. For fully independent delivery, connect distinct authorized channels.</p>
     <div class="stats">
       <div class="stat"><span>Schedule</span><strong id="autoState">Paused</strong><small>Requires connected destination</small></div>
       <div class="stat"><span>Next automatic post</span><strong id="nextPost" class="smallstat">Not scheduled</strong><small id="nextZone">—</small></div>
@@ -112,7 +134,7 @@
         <form id="newChannelForm">
           <div class="field"><label for="webhookName">Channel nickname</label><input id="webhookName" maxlength="60" placeholder="My UGN announcements" required autocomplete="off"/></div>
           <div class="field"><label for="webhookUrl">Discord webhook URL (private)</label><input id="webhookUrl" type="password" required placeholder="https://discord.com/api/webhooks/..." autocomplete="off"/></div>
-          <label class="permission"><input type="checkbox" id="permissionConfirmed" required/> I own this channel or have explicit permission to schedule promotional posts here.</label>
+          <div class="field"><label for="newChannelCampaign">Approved advertising project for this webhook</label><select id="newChannelCampaign"><option value="universal">Universal SMP only</option><option value="shattered">Shattered Crown only</option><option value="both">Both projects (explicit permission needed)</option></select></div><label class="permission"><input type="checkbox" id="permissionConfirmed" required/> I own this channel or have explicit permission to schedule promotional posts here.</label>
           <button class="primary" type="submit" id="addWebhook">Connect Discord webhook</button>
         </form>
         <p class="helper">Webhook secrets are stored in the backend's private data file, never shown again in the browser. Up to five approved channels.</p>
@@ -128,6 +150,26 @@
       <div id="deliveryLogs" class="loglist"><p class="helper">No delivery attempts yet.</p></div>
     </div>
     <p class="footnote">This tool does not log in to Minecraft listing sites, solve CAPTCHA, scrape accounts, send unsolicited DMs, or bypass posting limits. Keep promotional posts relevant and allowed by destination rules.</p>
+  </section>
+  <section id="analytics" class="section">
+    <div class="headrow"><div><h2>Campaign analytics</h2><p>Confirmed Discord sends, dashboard activity, and manually reported outcomes — no estimated player traffic.</p></div><button class="secondary" id="refreshAnalytics">Refresh</button></div>
+    <div class="stats">
+      <div class="stat"><span>Discord posts accepted</span><strong id="metricSent">0</strong><small>Actual successful sends</small></div>
+      <div class="stat"><span>Discord failures</span><strong id="metricFailed">0</strong><small>Actual failed sends</small></div>
+      <div class="stat"><span>Directory links opened</span><strong id="metricOpens">0</strong><small>Operator clicks, not visitor clicks</small></div>
+      <div class="stat"><span>Listings marked submitted</span><strong id="metricSubmitted">0</strong><small>Manual submission records</small></div>
+    </div>
+    <div class="two">
+      <div class="panel"><h3 class="cardtitle">Directory activity</h3><p class="helper">Shows which listing website links you opened from this dashboard, not external traffic.</p><div id="analyticsBars" class="analytics-rows"></div></div>
+      <div class="panel"><h3 class="cardtitle">Manually reported results</h3><p class="helper">Enter clicks and joins only if you have real counts from a directory or your server tools. These values are not automatically verified.</p>
+        <form id="manualMetrics" class="metric-edit">
+          <div class="field"><label for="manualClicks">Reported listing clicks</label><input id="manualClicks" type="number" min="0" max="1000000" value="0" required /></div>
+          <div class="field"><label for="manualJoins">Reported player joins</label><input id="manualJoins" type="number" min="0" max="1000000" value="0" required /></div>
+          <button class="primary" type="submit">Save results</button>
+        </form><p class="helptext">Separate values for Universal SMP and Shattered Crown; never label estimates as verified.</p>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px"><h3 class="cardtitle">Campaign comparison</h3><div id="campaignCompare" class="analytics-rows"></div></div>
   </section>
   <section id="updates" class="section">
     <div class="headrow"><div><h2>GitHub website updates</h2><p>Check for a newer version and install it straight from a release in your own GitHub repository.</p></div><button class="secondary" id="refreshUpdate">Refresh update status</button></div>
@@ -173,7 +215,14 @@ const SITES=[
  {id:"minebuff",name:"MineBuff",initial:"BF",type:"Manual",desc:"Add or claim a server, then verify ownership.",url:"https://minebuff.com/en/guide"},
  {id:"mcservershare",name:"MCServerShare",initial:"SH",type:"Manual",desc:"Free Java & Bedrock directory; create an account to list.",url:"https://www.mcservershare.com/"},
  {id:"mcserverbuzz",name:"MinecraftServer.Buzz",initial:"BZ",type:"Manual",desc:"Minecraft server directory with community discovery tools.",url:"https://minecraftserver.buzz/"},
- {id:"minecraftip",name:"MinecraftIP",initial:"IP",type:"Manual",desc:"Minecraft server list covering Java and Bedrock communities.",url:"https://minecraftip.com/"}
+ {id:"minecraftip",name:"MinecraftIP",initial:"IP",type:"Manual",desc:"Minecraft server list covering Java and Bedrock communities.",url:"https://minecraftip.com/"},
+ {id:"minebrowse",name:"Minebrowse",initial:"MB",type:'Manual',desc:"Server listings, voting and player discovery",url:"https://www.minebrowse.com/"},
+ {id:"minecraftserversme",name:"MinecraftServers.me",initial:"ME",type:'Manual',desc:"Owner listing guide and moderation rules",url:"https://minecraftservers.me/guides/get-your-server-listed"},
+ {id:"mcserverscout",name:"MCServerScout",initial:"SC",type:'Manual',desc:"Free listing for reachable servers",url:"https://mcserverscout.com/faq"},
+ {id:"minecraftserversgg",name:"MinecraftServers.gg",initial:"GG",type:'Manual',desc:"Java and Bedrock directory and claimable pages",url:"https://minecraftservers.gg/"},
+ {id:"serverradar",name:"ServerRadar",initial:"SR",type:'Manual',desc:"Independent Java and Bedrock server directory",url:"https://www.minecraftserverradar.com/"},
+ {id:"mineserverlist",name:"MineServerList",initial:"LS",type:'Manual',desc:"Owner-defined listing information and versions",url:"https://www.mineserverlist.com/"},
+ {id:"minerate",name:"MineRate",initial:"MR",type:'Manual',desc:"Minecraft directory, search and server status",url:"https://minerate.net/"}
 ];
 let activeId='universal';let settings={...DEFAULTS,...read('ugnSettings',DEFAULTS)};
 let progressByCampaign=read('ugnProgressByCampaign',{universal:read('ugnProgress',{}),shattered:{}});
@@ -198,10 +247,12 @@ function ad(d,style){
  return `${name}\n\n${description}\n\nWHAT TO EXPECT\n• Java + Bedrock crossplay\n• Survival, exploration and building\n• Custom content and progression\n• Community-focused multiplayer\n\nHOW TO JOIN\nJava address: ${ip}\nJava port: ${ja}\nBedrock address: ${ip}\nBedrock port: ${be}${links?'\n\n'+links:''}\n\nCome build your story with us!`;
 }
 function updatePreview(){el('adPreview').textContent=ad(getData(),el('adStyle').value)}
+async function recordSiteOpen(s){try{await api('/api/analytics/site-open','POST',{siteId:s.id})}catch{ /* Offline link opening remains usable */ }}
+function openSite(s){window.open(s.auto==='prefill'?craftUrl():s.url,'_blank','noopener,noreferrer');recordSiteOpen(s)}
 function craftUrl(){if(isDevelopment()||!settings.serverIp)return 'https://craftrank.org/panel/add';const p=new URLSearchParams();p.set('ref','UGN');p.set('name',settings.serverName);p.set('host',settings.serverIp);p.set('port',settings.javaPort);p.set('edition','java');p.set('lang','en');if(settings.discord)p.set('discord',settings.discord);if(settings.website)p.set('website',settings.website);p.set('description',settings.serverDesc);return 'https://craftrank.org/panel/add?'+p.toString()}
-function siteCard(s){let saved=progress[s.id],wrap=document.createElement('article');wrap.className='site';const top=document.createElement('div');top.className='site-top';const icon=document.createElement('div');icon.className='site-icon';icon.textContent=s.initial;const tag=document.createElement('span');tag.className='tag'+(s.type==='Manual'?' manual':'');tag.textContent=s.type;top.append(icon,tag);wrap.append(top);const h=document.createElement('h3');h.textContent=s.name;const desc=document.createElement('p');desc.textContent=s.desc;wrap.append(h,desc);const buttons=document.createElement('div');buttons.className='site-actions';const open=document.createElement('button');open.className='secondary';open.textContent=s.type==='Prefilled'?'Open prefilled form ↗':'Open website ↗';open.addEventListener('click',()=>{window.open(s.auto==='prefill'?craftUrl():s.url,'_blank','noopener,noreferrer')});const mark=document.createElement('button');mark.className='compact';mark.textContent=isDevelopment()?'Requires live server':saved?'✓ Submitted':'Mark submitted';mark.disabled=isDevelopment();mark.addEventListener('click',()=>{if(progress[s.id])delete progress[s.id];else progress[s.id]=new Date().toISOString();saveProgress();render();notify(progress[s.id]?'Marked as submitted':'Marked as pending')});buttons.append(open,mark);wrap.append(buttons);if(saved){const last=document.createElement('div');last.className='last';last.textContent='Recorded: '+new Date(saved).toLocaleString();wrap.append(last)}return wrap}
-function render(){const count=SITES.filter(s=>progress[s.id]).length;el('statSubmitted').textContent=count;el('statRemaining').textContent=SITES.length-count;el('heroIp').textContent=isDevelopment()?'In development — no public IP yet':settings.serverIp;el('copyIp').disabled=isDevelopment()||!settings.serverIp;el('heroTitle').textContent=isDevelopment()?'Help build Shattered Crown.':'Turn one great ad into a smarter campaign.';el('heroBlurb').textContent=isDevelopment()?'Promote Shattered Crown as a project recruiting builders and mod creators. Live-server directories will become available once it launches.':'Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.';el('overviewSites').replaceChildren(...SITES.slice(0,4).map(siteCard));const shown=SITES.filter(s=>filter==='all'||(filter==='submitted'?!!progress[s.id]:!progress[s.id]));el('allSites').replaceChildren(...shown.map(siteCard));const r=el('trackingRows');r.replaceChildren();for(const s of SITES){const line=document.createElement('div');line.className='schedule-row';const name=document.createElement('strong');name.textContent=s.name;const note=document.createElement('div');note.textContent=progress[s.id]?'Manually marked submitted on '+new Date(progress[s.id]).toLocaleDateString():isDevelopment()?'Awaiting live server launch':'Not submitted yet';note.className='helper';const left=document.createElement('div');left.append(name,note);const mid=document.createElement('div');const b=document.createElement('span');b.className='badge';b.textContent=progress[s.id]?'✓ Submitted':'○ Pending';mid.append(b);const action=document.createElement('button');action.className='compact';action.textContent='Open site ↗';action.addEventListener('click',()=>window.open(s.auto==='prefill'?craftUrl():s.url,'_blank','noopener,noreferrer'));line.append(left,mid,action);r.append(line)}}
-function view(v){document.querySelectorAll('.section').forEach(e=>e.classList.toggle('show',e.id===v));document.querySelectorAll('nav button').forEach(e=>e.classList.toggle('active',e.dataset.view===v));const titles={overview:'Advertising overview',campaign:'Campaign builder',directory:'Advertising websites',auto:'Automatic advertiser',tracking:'Listing tracker',updates:'Website updates'};el('pageTitle').textContent=titles[v]||'Advertising overview';window.scrollTo({top:0,behavior:'instant'})}
+function siteCard(s){let saved=progress[s.id],wrap=document.createElement('article');wrap.className='site';const top=document.createElement('div');top.className='site-top';const icon=document.createElement('div');icon.className='site-icon';icon.textContent=s.initial;const tag=document.createElement('span');tag.className='tag'+(s.type==='Manual'?' manual':'');tag.textContent=s.type;top.append(icon,tag);wrap.append(top);const h=document.createElement('h3');h.textContent=s.name;const desc=document.createElement('p');desc.textContent=s.desc;wrap.append(h,desc);const buttons=document.createElement('div');buttons.className='site-actions';const open=document.createElement('button');open.className='secondary';open.textContent=s.type==='Prefilled'?'Open prefilled form ↗':'Open website ↗';open.addEventListener('click',()=>openSite(s));const mark=document.createElement('button');mark.className='compact';mark.textContent=isDevelopment()?'Requires live server':saved?'✓ Submitted':'Mark submitted';mark.disabled=isDevelopment();mark.addEventListener('click',()=>{if(progress[s.id])delete progress[s.id];else progress[s.id]=new Date().toISOString();saveProgress();render();notify(progress[s.id]?'Marked as submitted':'Marked as pending')});buttons.append(open,mark);wrap.append(buttons);if(saved){const last=document.createElement('div');last.className='last';last.textContent='Recorded: '+new Date(saved).toLocaleString();wrap.append(last)}return wrap}
+function render(){const count=SITES.filter(s=>progress[s.id]).length;el('statSites').textContent=SITES.length;el('statSubmitted').textContent=count;el('statRemaining').textContent=SITES.length-count;el('heroIp').textContent=isDevelopment()?'In development — no public IP yet':settings.serverIp;el('copyIp').disabled=isDevelopment()||!settings.serverIp;el('heroTitle').textContent=isDevelopment()?'Help build Shattered Crown.':'Turn one great ad into a smarter campaign.';el('heroBlurb').textContent=isDevelopment()?'Promote Shattered Crown as a project recruiting builders and mod creators. Live-server directories will become available once it launches.':'Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.';el('overviewSites').replaceChildren(...SITES.slice(0,4).map(siteCard));const shown=SITES.filter(s=>filter==='all'||(filter==='submitted'?!!progress[s.id]:!progress[s.id]));el('allSites').replaceChildren(...shown.map(siteCard));const r=el('trackingRows');r.replaceChildren();for(const s of SITES){const line=document.createElement('div');line.className='schedule-row';const name=document.createElement('strong');name.textContent=s.name;const note=document.createElement('div');note.textContent=progress[s.id]?'Manually marked submitted on '+new Date(progress[s.id]).toLocaleDateString():isDevelopment()?'Awaiting live server launch':'Not submitted yet';note.className='helper';const left=document.createElement('div');left.append(name,note);const mid=document.createElement('div');const b=document.createElement('span');b.className='badge';b.textContent=progress[s.id]?'✓ Submitted':'○ Pending';mid.append(b);const action=document.createElement('button');action.className='compact';action.textContent='Open site ↗';action.addEventListener('click',()=>openSite(s));line.append(left,mid,action);r.append(line)}}
+function view(v){document.querySelectorAll('.section').forEach(e=>e.classList.toggle('show',e.id===v));document.querySelectorAll('nav button').forEach(e=>e.classList.toggle('active',e.dataset.view===v));const titles={overview:'Advertising overview',campaign:'Campaign builder',directory:'Advertising websites',auto:'Independent automatic schedules',tracking:'Listing tracker',analytics:'Campaign analytics',updates:'Website updates'};el('pageTitle').textContent=titles[v]||'Advertising overview';window.scrollTo({top:0,behavior:'instant'})}
 for(const b of document.querySelectorAll('nav button'))b.addEventListener('click',()=>view(b.dataset.view));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.go)));
 for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('selected',x===b));render()});
 el('saveCampaign').addEventListener('click',async()=>{const data=getData();if(!data.serverName||!data.serverDesc||(data.serverStatus==='live'&&(!data.serverIp||!validPort(data.javaPort)||!validPort(data.bedrockPort)))){notify('Enter a description and, for live servers, an IP and valid ports');return}try{await api('/api/campaign','PUT',data);settings=data;store(activeId==='universal'?'ugnSettings':'ugnShatteredSettings',settings);render();await refreshAuto();notify('Campaign saved to the automatic sender')}catch(e){notify('Could not save campaign: '+e.message)}});
@@ -215,7 +266,8 @@ putData(settings);render();
 
 // Server-backed schedule controls. Other directory/listing functionality still works offline.
 let autoData=null;
-el('campaignPicker').addEventListener('change',async()=>{const id=el('campaignPicker').value;try{const result=await api('/api/campaign/active','PUT',{campaignId:id});const data=await api('/api/state');activeId=id;settings=data.campaign;progress=progressByCampaign[id]||{};putData(settings);render();renderAuto(data);autoData=data;applySchedule(data.schedule);notify(result.paused?'Campaign selected; schedule paused for safety':'Campaign selected')}catch(e){el('campaignPicker').value=activeId;notify('Could not switch campaigns: '+e.message)}});
+document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{el('campaignPicker').value=b.dataset.pick;el('campaignPicker').dispatchEvent(new Event('change'))}));
+el('campaignPicker').addEventListener('change',async()=>{const id=el('campaignPicker').value;try{const result=await api('/api/campaign/active','PUT',{campaignId:id});const data=await api('/api/state');activeId=id;settings=data.campaign;el('newChannelCampaign').value=activeId;progress=progressByCampaign[id]||{};putData(settings);render();renderAuto(data);autoData=data;applySchedule(data.schedule);notify('Campaign selected. Both automatic schedules retain their individual settings.')}catch(e){el('campaignPicker').value=activeId;notify('Could not switch campaigns: '+e.message)}});
 async function api(route,method='GET',body){
   let response;
   try {response=await fetch(route,{method,headers:{...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});}catch{throw Error('scheduler server is not running')}
@@ -230,37 +282,102 @@ function applySchedule(s){el('scheduleMode').value=s.mode;el('scheduleEvery').va
 function dateText(iso){if(!iso)return 'Not scheduled';try{return new Date(iso).toLocaleString([],{dateStyle:'medium',timeStyle:'short'})}catch{return iso}}
 function webhookRow(ch){
   const div=document.createElement('div');div.className='webhook';
-  const data=document.createElement('div');const name=document.createElement('strong');name.textContent=ch.name+(ch.enabled?'':' (disabled)');const mask=document.createElement('small');mask.textContent=ch.masked;data.append(name,mask);
+  const data=document.createElement('div');const name=document.createElement('strong');name.textContent=ch.name+(ch.enabled?'':' (disabled)');const mask=document.createElement('small');mask.textContent=ch.masked;data.append(name,mask);const assigned=document.createElement('small');assigned.textContent='Approved for: '+(ch.campaignIds||['universal']).map(id=>id==='shattered'?'Shattered Crown':'Universal SMP').join(' + ');data.append(assigned);
   const actions=document.createElement('div');actions.className='actions';
-  const test=document.createElement('button');test.className='compact';test.textContent='Send test';test.disabled=!ch.enabled;
+ const assignment=document.createElement('select');assignment.setAttribute('aria-label','Allowed campaigns for '+ch.name);
+ assignment.style.cssText='background:#0d192a;color:#f2f6ff;border:1px solid #345069;border-radius:9px;padding:8px';
+ for(const [value,label] of [['universal','Universal SMP'],['shattered','Shattered Crown'],['both','Both projects']]){const option=document.createElement('option');option.value=value;option.textContent=label;assignment.append(option)}
+ const targetIds=ch.campaignIds||['universal'];assignment.value=targetIds.length===2?'both':targetIds[0];
+ assignment.addEventListener('change',async()=>{
+  const ids=assignment.value==='both'?['universal','shattered']:[assignment.value];
+  if(ids.includes('shattered')&&!confirm('Confirm this Discord channel permits Shattered Crown promotions?')){assignment.value=targetIds.length===2?'both':targetIds[0];return}
+  try{await api('/api/channels/'+encodeURIComponent(ch.id),'PATCH',{campaignIds:ids});notify('Channel assignment saved');await refreshAuto()}catch(e){notify('Could not change channel assignment: '+e.message);assignment.value=targetIds.length===2?'both':targetIds[0]}
+ });
+  const test=document.createElement('button');test.className='compact';test.textContent='Send test';test.disabled=!ch.enabled||!(ch.campaignIds||['universal']).includes(activeId);
   test.addEventListener('click',async()=>{if(!confirm(`Send one clearly labeled test advertisement to ${ch.name}?`))return;test.disabled=true;try{const r=await api('/api/test','POST',{channelId:ch.id});notify(`Test: ${r.sent} sent, ${r.failed} failed`)}catch(e){notify('Test failed: '+e.message)}finally{await refreshAuto();test.disabled=false}});
   const remove=document.createElement('button');remove.className='compact';remove.textContent='Remove';
   remove.addEventListener('click',async()=>{if(!confirm(`Remove ${ch.name} from the auto advertiser?`))return;try{await api('/api/channels/'+encodeURIComponent(ch.id),'DELETE');notify('Channel removed');await refreshAuto()}catch(e){notify(e.message)}});
   const toggle=document.createElement('button');toggle.className='compact';toggle.textContent=ch.enabled?'Disable':'Enable';
   toggle.addEventListener('click',async()=>{try{await api('/api/channels/'+encodeURIComponent(ch.id),'PATCH',{enabled:!ch.enabled});notify(ch.enabled?'Channel disabled':'Channel enabled');await refreshAuto()}catch(e){notify(e.message)}});
-  actions.append(test,toggle,remove);div.append(data,actions);return div;
+  actions.append(assignment,test,toggle,remove);div.append(data,actions);return div;
 }
-function logRow(entry){const row=document.createElement('div');row.className='logentry';const col1=document.createElement('div');const when=document.createElement('strong');when.textContent=dateText(entry.at);const more=document.createElement('small');more.textContent=entry.trigger;col1.append(when,document.createElement('br'),more);const body=document.createElement('div');const channel=document.createElement('strong');channel.textContent=entry.channel;const msg=document.createElement('div');msg.textContent=entry.message;msg.className='helper';body.append(channel,msg);const badge=document.createElement('span');badge.className='pill '+entry.result;badge.textContent=entry.result;row.append(col1,body,badge);return row}
+function logRow(entry){const row=document.createElement('div');row.className='logentry';const col1=document.createElement('div');const when=document.createElement('strong');when.textContent=dateText(entry.at);const more=document.createElement('small');more.textContent=entry.trigger;col1.append(when,document.createElement('br'),more);const body=document.createElement('div');const channel=document.createElement('strong');channel.textContent=entry.channel;const msg=document.createElement('div');msg.textContent=(entry.campaignId?(entry.campaignId==='shattered'?'Shattered Crown: ':'Universal SMP: '):'')+entry.message;msg.className='helper';body.append(channel,msg);const badge=document.createElement('span');badge.className='pill '+entry.result;badge.textContent=entry.result;row.append(col1,body,badge);return row}
 function autoContent(c){
  if(isDevelopment(c))return `🌌 **${c.serverName}** 🌌\n\n${c.serverDesc}\n\n🛠️ In development — seeking volunteer builders and mod creators. Not open for public joining yet.${c.discord?'\n💬 Discord: '+c.discord:''}${c.website?'\n🌐 Website: '+c.website:''}\n\n✨ Join the community and follow our progress!`.slice(0,1900);
  return `🌌 **${c.serverName}** 🌌\n\n${c.serverDesc}\n\n☕ Java: ${c.serverIp}:${c.javaPort}\n🎮 Bedrock: ${c.serverIp}:${c.bedrockPort}${c.discord?'\n💬 Discord: '+c.discord:''}${c.website?'\n🌐 Website: '+c.website:''}\n\n✨ Join our Minecraft community!`.slice(0,1900);
 }
 function renderAuto(data){
   const s=data.schedule;
+  document.querySelectorAll('[data-pick]').forEach(b=>b.classList.toggle('selected',b.dataset.pick===activeId));
+  for(const id of ['universal','shattered']){
+    const quick=el(id+'Quick'),sched=data.schedules?.[id];
+    if(quick)quick.textContent=sched?.enabled?'Scheduled · '+(sched.nextAt?dateText(sched.nextAt):'pending'):'Schedule paused';
+  }
+  const summary=el('scheduleSummary');summary.replaceChildren();
+  for(const id of ['universal','shattered']){
+    const item=document.createElement('button');item.className='campaign-tile'+(id===activeId?' selected':'');
+    const h=document.createElement('strong');h.textContent=id==='universal'?'🌌 Universal SMP':'⚔️ Shattered Crown';
+    const status=document.createElement('small');const sched=data.schedules?.[id];
+    status.textContent=sched?.enabled?'Active · Next '+dateText(sched.nextAt):'Paused · Configure this campaign';
+    item.append(h,status);
+    item.addEventListener('click',()=>{el('campaignPicker').value=id;el('campaignPicker').dispatchEvent(new Event('change'))});
+    summary.append(item);
+  }
+
   el('autoMessagePreview').textContent=autoContent(data.campaign);
   el('autoStatus').textContent='Scheduler connected. Posts are sent only to the authorized webhooks listed below.';el('autoStatus').className='autostatus online';
   el('connectionStatus').textContent='Scheduler connected';
   el('autoState').textContent=s.enabled?'Active':'Paused';el('autoState').style.color=s.enabled?'#82e6c1':'';
   el('nextPost').textContent=s.nextAt?dateText(s.nextAt):'Not scheduled';el('nextZone').textContent=s.mode==='weekly'?s.timeZone:'Interval schedule';
-  el('channelCount').textContent=data.channels.length;el('autoSent').textContent=data.stats.sent;el('statAuto').textContent=data.stats.sent;
+  el('channelCount').textContent=data.channels.filter(c=>c.enabled&&(c.campaignIds||['universal']).includes(activeId)).length;el('autoSent').textContent=data.statsByCampaign?.[activeId]?.sent||0;el('statAuto').textContent=data.statsByCampaign?.[activeId]?.sent||0;
   el('toggleSchedule').disabled=false;el('toggleSchedule').textContent=s.enabled?'Pause automatic posts':'Start automatic posts';
   const list=el('webhookList');list.replaceChildren();
   if(!data.channels.length){const p=document.createElement('p');p.className='helper';p.textContent='No channels connected. Add an authorized Discord webhook above.';list.append(p)}else list.replaceChildren(...data.channels.map(webhookRow));
   const logs=el('deliveryLogs');logs.replaceChildren();
-  if(data.logs.length)logs.replaceChildren(...data.logs.map(logRow));else {const p=document.createElement('p');p.className='helper';p.textContent='No delivery attempts yet.';logs.append(p)}
+  const relevant=data.logs.filter(x=>!x.campaignId||x.campaignId===activeId);
+  if(relevant.length)logs.replaceChildren(...relevant.map(logRow));else {const p=document.createElement('p');p.className='helper';p.textContent='No delivery attempts yet.';logs.append(p)}
+  renderAnalytics(data);
 }
+function renderAnalytics(data){
+ const metrics=data.analytics?.[activeId]||{siteOpens:{},manualClicks:0,manualJoins:0};
+ const stats=data.statsByCampaign?.[activeId]||{sent:0,failed:0};
+ const entries=Object.entries(metrics.siteOpens||{}).filter(([,n])=>Number.isFinite(n)&&n>0).sort((a,b)=>b[1]-a[1]);
+ el('metricSent').textContent=stats.sent||0;el('metricFailed').textContent=stats.failed||0;
+ el('metricOpens').textContent=entries.reduce((sum,[,n])=>sum+n,0);
+ el('metricSubmitted').textContent=SITES.filter(x=>!!progress[x.id]).length;
+ el('manualClicks').value=metrics.manualClicks||0;el('manualJoins').value=metrics.manualJoins||0;
+ const bars=el('analyticsBars');bars.replaceChildren();
+ const maximum=Math.max(1,...entries.map(x=>x[1]));
+ for(const [id,num] of entries.slice(0,10)){
+  const item=document.createElement('div');item.className='analytics-row';
+  const label=document.createElement('span');label.textContent=SITES.find(x=>x.id===id)?.name||id;
+  const rail=document.createElement('div');rail.className='bartrack';
+  const fill=document.createElement('div');fill.className='barfill';fill.style.width=Math.max(2,(num/maximum)*100)+'%';rail.append(fill);
+  const val=document.createElement('strong');val.textContent=num;item.append(label,rail,val);bars.append(item);
+ }
+ if(!entries.length){const e=document.createElement('p');e.className='helper';e.textContent='No directory links have been opened from the dashboard yet.';bars.append(e)}
+ const compare=el('campaignCompare');compare.replaceChildren();
+ for(const id of ['universal','shattered']){
+  const item=document.createElement('div');item.className='schedule-row';
+  const name=document.createElement('strong');name.textContent=id==='universal'?'Universal SMP':'Shattered Crown';
+  const sched=document.createElement('span');sched.className='helper';sched.textContent=data.schedules?.[id]?.enabled?'Active · '+dateText(data.schedules[id].nextAt):'Paused';
+  const count=document.createElement('strong');count.textContent=(data.statsByCampaign?.[id]?.sent||0)+' accepted';
+  item.append(name,sched,count);compare.append(item);
+ }
+}
+el('refreshAnalytics').addEventListener('click',()=>refreshAuto());
+el('manualMetrics').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const clicks=Number(el('manualClicks').value),joins=Number(el('manualJoins').value);
+ if(![clicks,joins].every(x=>Number.isInteger(x)&&x>=0&&x<=1000000)){notify('Use whole numbers from 0 to 1,000,000');return}
+ try{
+  await api('/api/analytics/manual','POST',{metric:'manualClicks',value:clicks});
+  await api('/api/analytics/manual','POST',{metric:'manualJoins',value:joins});
+  await refreshAuto();notify('Manually reported results saved');
+ }catch(err){notify('Could not save reported results: '+err.message)}
+});
 async function refreshAuto(initial=false){
- try{const data=await api('/api/state');autoData=data;if(initial){activeId=data.activeCampaign||'universal';el('campaignPicker').value=activeId;progress=progressByCampaign[activeId]||{};settings=data.campaign;putData(settings);render();applySchedule(data.schedule)}renderAuto(data)}
+ try{const data=await api('/api/state');autoData=data;if(initial){activeId=data.activeCampaign||'universal';el('campaignPicker').value=activeId;progress=progressByCampaign[activeId]||{};settings=data.campaign;el('newChannelCampaign').value=activeId;putData(settings);render();applySchedule(data.schedule)}renderAuto(data)}
  catch(e){el('autoStatus').textContent='Scheduler offline — open this website from http://127.0.0.1:3000 after running server.js. File-only previews cannot send automatically.';el('autoStatus').className='autostatus offline';el('connectionStatus').textContent='Scheduler offline';el('toggleSchedule').disabled=true;}
 }
 el('refreshAuto').addEventListener('click',()=>refreshAuto());el('refreshLogs').addEventListener('click',()=>refreshAuto());
@@ -271,13 +388,13 @@ el('saveSchedule').addEventListener('click',async()=>{
 el('toggleSchedule').addEventListener('click',async()=>{
  if(!autoData)return;
  const enable=!autoData.schedule.enabled;
- if(enable && !confirm('Start sending the saved campaign to every connected and permitted Discord webhook on your chosen schedule?'))return;
+ if(enable && !confirm('Start this campaign’s schedule on its approved webhook channels? Other campaign schedules remain unchanged.'))return;
  try{await api('/api/activate','POST',{enabled:enable});notify(enable?'Automatic posting started':'Automatic posting paused');await refreshAuto()}
  catch(e){notify('Could not change schedule: '+e.message)}
 });
 el('newChannelForm').addEventListener('submit',async e=>{
  e.preventDefault();const btn=el('addWebhook');btn.disabled=true;
- try{await api('/api/channels','POST',{name:el('webhookName').value,url:el('webhookUrl').value,permissionConfirmed:el('permissionConfirmed').checked});el('webhookName').value='';el('webhookUrl').value='';el('permissionConfirmed').checked=false;notify('Discord webhook connected');await refreshAuto()}
+ try{await api('/api/channels','POST',{name:el('webhookName').value,url:el('webhookUrl').value,permissionConfirmed:el('permissionConfirmed').checked,campaignIds:el('newChannelCampaign').value==='both'?['universal','shattered']:[el('newChannelCampaign').value]});el('webhookName').value='';el('webhookUrl').value='';el('permissionConfirmed').checked=false;el('newChannelCampaign').value=activeId;notify('Discord webhook connected');await refreshAuto()}
  catch(err){notify('Could not connect: '+err.message)}finally{btn.disabled=false}
 });
 setInterval(()=>{if(!document.hidden)refreshAuto()},30000);
