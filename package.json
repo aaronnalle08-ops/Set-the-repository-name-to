@@ -2,7 +2,7 @@
   "name": "ugn-advertising-command-center",
   "version": "3.2.0",
   "private": true,
-  "description": "UGN dashboard with 21 Minecraft listing destinations, separate campaign schedules, honest analytics, and safe GitHub updates",
+  "description": "UGN dashboard with 25 Minecraft listing destinations, separate campaign schedules, honest analytics, and safe GitHub updates",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
