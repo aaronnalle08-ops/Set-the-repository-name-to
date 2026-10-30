@@ -21,6 +21,26 @@
   @media(max-width:1000px){.shell{grid-template-columns:80px 1fr}aside{padding:21px 12px}.brand{justify-content:center}.brand .bn,nav button .label,.sidebar-note{display:none}nav button{justify-content:center;padding:12px}.stats{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:650px){.shell{grid-template-columns:1fr}aside{padding:10px 15px;flex-direction:row;align-items:center;gap:10px;position:sticky;top:0;z-index:5} .brand{border:0;padding:0}.brand .bn{display:none}nav{display:flex;gap:3px;flex:1;justify-content:flex-end}nav button{padding:7px} .sidebar-note{display:none} main{padding:20px 14px 42px}.top{margin-bottom:17px}.top h1{font-size:22px}.status{display:none}.hero{padding:24px 20px}.hero h2{font-size:26px}.stats{gap:8px}.stat{padding:14px}.stat strong{font-size:23px}.platforms,.two{grid-template-columns:1fr}.headrow{align-items:start}.headrow h2{font-size:18px}.schedule-row{grid-template-columns:1fr 1fr}.schedule-row>div:nth-child(2){grid-row:2;grid-column:1/-1}}
 
+  /* v3.2 command center design */
+  :root{--bg:#07111f;--panel:#101f32;--stroke:#2c4158;--cyan:#6ceadd;--blue:#76a9ff}
+  .shell{max-width:1600px;grid-template-columns:255px 1fr}
+  aside{background:linear-gradient(180deg,#101e32,#0a1726);position:sticky;top:0;height:100vh}
+  .brand{padding-top:13px}.emblem{font-size:23px;padding:13px 15px}
+  .top{background:linear-gradient(110deg,#112a40,#0e1d31);border:1px solid #294965;border-radius:18px;padding:22px 24px}
+  .top h1{font-size:30px}.hero{background:linear-gradient(125deg,#174f5e,#203b65 55%,#1b2542);padding:36px}
+  .hero::after{content:'✧';right:46px;top:-95px;font-size:270px}
+  .stat{background:linear-gradient(140deg,#172c42,#0e1b2d);box-shadow:0 12px 30px #0002}
+  .site{transition:transform .15s,border-color .15s}.site:hover{transform:translateY(-2px);border-color:#579eae}
+  button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+  .campaign-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0 20px}
+  .campaign-tile{background:#11273a;border:1px solid #3b5b70;border-radius:13px;padding:17px;text-align:left;color:#dcefff;cursor:pointer}
+  .campaign-tile.selected{border-color:#55dbcb;background:linear-gradient(125deg,#193d4b,#172d4b)}.campaign-tile strong{display:block;font-size:15px}.campaign-tile small{color:#a3c4d3}
+  .analytics-rows{display:grid;gap:13px}.analytics-row{display:grid;grid-template-columns:minmax(110px,200px) 1fr 40px;gap:12px;align-items:center;font-size:12px}
+  .bartrack{height:10px;background:#263950;border-radius:20px;overflow:hidden}.barfill{height:100%;border-radius:20px;background:linear-gradient(90deg,#67e6d6,#68aafa);min-width:2px}
+  .metric-edit{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.metric-edit .field{flex:1;min-width:170px;margin-bottom:0}
+  .section-lede{color:#b9cfe3;margin:0 0 19px;max-width:850px}
+  @media(max-width:1000px){aside{position:static;height:auto}.shell{grid-template-columns:80px 1fr}}
+  @media(max-width:650px){.shell{grid-template-columns:1fr}.campaign-strip{grid-template-columns:1fr}.top{padding:16px}}
   .update-message{border:1px solid #365269;border-radius:11px;padding:14px 16px;background:#102a3b;color:#c9eaf5;margin:12px 0;font-size:13px;overflow-wrap:anywhere}.update-message.good{background:#143c31;border-color:#2e7c65;color:#c5fae5}.update-message.warn{background:#433228;border-color:#946d44;color:#ffe0bc}.update-actions{display:flex;gap:10px;flex-wrap:wrap}.update-actions button{min-width:150px}.update-actions button:disabled{opacity:.5;cursor:not-allowed} .update-field{max-width:610px}.update-version{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}.update-version strong{font-size:23px;color:#94edf1}
   .autostatus{padding:12px 16px;background:#152637;border:1px solid #30546b;border-radius:12px;color:#c7e3f0;font-size:13px;margin-bottom:17px}.autostatus.online{background:#103c32;border-color:#226959;color:#bcfbe8}.autostatus.offline{background:#402f30;border-color:#805756;color:#f6d3c9}
   .smallstat{font-size:15px!important;line-height:1.5!important;overflow-wrap:anywhere}.cardtitle{font-size:17px;letter-spacing:-.025em;margin:0 0 16px}.autobuttons{display:flex;gap:10px;flex-wrap:wrap}.autobuttons button{flex:1}.autobuttons button:disabled{opacity:.45;cursor:not-allowed}.permission{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#c4d7e5;line-height:1.6;margin:0 0 17px}.permission input{margin-top:3px;accent-color:#49ddd9}.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.days label{font-size:12px;display:flex;flex-direction:column;gap:7px;align-items:center;color:#b7cde0;border:1px solid #345069;background:#0d192a;border-radius:9px;padding:8px 2px}.days input{width:16px;height:16px;accent-color:#49ddd9}.webhooklist{margin-top:18px;border-top:1px solid var(--stroke);padding-top:10px;display:grid;gap:12px}.webhook{border:1px solid #355069;background:#0c1a2a;border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.webhook small{display:block;color:#819aaf}.webhook .actions{display:flex;gap:6px;flex-wrap:wrap}.loglist{max-height:370px;overflow:auto}.logentry{border-bottom:1px solid var(--stroke);display:grid;grid-template-columns:155px 1fr auto;gap:12px;align-items:start;padding:11px 3px;font-size:12px}.logentry small{color:#819aaf}.pill{border-radius:100px;padding:3px 8px;background:#274158;color:#c5f0ff}.pill.sent,.pill.enabled{background:#214c40;color:#abf2d6}.pill.failed{background:#502c36;color:#ffc0cc}.pill.paused,.pill.skipped{background:#514029;color:#f9d8a0}
@@ -37,6 +57,7 @@
     <button data-view="directory"><span class="sym">⌁</span><span class="label">Advertising sites</span></button>
     <button data-view="auto"><span class="sym">◷</span><span class="label">Auto scheduler</span></button>
     <button data-view="tracking"><span class="sym">☷</span><span class="label">Listing tracker</span></button>
+     <button data-view="analytics"><span class="sym">▤</span><span class="label">Analytics</span></button>
     <button data-view="updates"><span class="sym">⟳</span><span class="label">Website updates</span></button>
   </nav>
   <div class="sidebar-note"><strong>Important</strong><p>Automated posting works only with incoming webhooks for channels you control or may promote in. Minecraft listing sites still need approved integrations or manual submissions.</p></div>
@@ -44,8 +65,9 @@
 <main>
   <div class="top"><div><span class="eyebrow">Universal Gaming Network</span><h1 id="pageTitle">Advertising overview</h1><label class="helper" for="campaignPicker" style="display:inline-block;margin-top:10px;margin-right:10px">Active campaign</label><select id="campaignPicker" style="background:#13283c;color:#e5f6ff;border:1px solid #397081;border-radius:9px;padding:8px 12px"><option value="universal">Universal SMP</option><option value="shattered">Shattered Crown — in development</option></select></div><span class="status"><i></i> <span id="connectionStatus">Connecting to scheduler...</span></span></div>
   <section id="overview" class="section show">
+    <div class="campaign-strip"><button class="campaign-tile selected" data-pick="universal"><strong>🌌 Universal SMP</strong><small id="universalQuick">Survival server ads and schedule</small></button><button class="campaign-tile" data-pick="shattered"><strong>⚔️ Shattered Crown</strong><small id="shatteredQuick">Kingdom project recruiting</small></button></div>
     <div class="hero"><div class="mini">YOUR NETWORK. EVERYWHERE PLAYERS LOOK.</div><h2 id="heroTitle">Turn one great ad into a smarter campaign.</h2><p id="heroBlurb">Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.</p><div class="iprow"><span class="ip" id="heroIp">play.universalgaming.us</span><button class="primary" id="copyIp">Copy server address</button><button class="secondary" data-go="campaign">Edit your campaign</button></div></div>
-    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">5</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">5</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
+    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">21</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">21</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
     <div class="headrow"><div><h2>Recommended advertising sites</h2><p>Start with server directories that accept Minecraft server listings.</p></div><button class="secondary" data-go="directory">See all sites</button></div>
     <div class="platforms" id="overviewSites"></div>
     <p class="footnote">Tip: Most server directories require separate accounts, ownership verification, and manual confirmation. Mark a site as submitted only after you actually finish publishing on that site.</p>
@@ -74,8 +96,8 @@
   </section>
 
   <section id="auto" class="section">
-    <div class="headrow"><div><h2>Custom automatic advertising</h2><p>Schedule posts to approved Discord announcement channels. Your computer must run the backend, or you must deploy it to always-on hosting.</p></div><button class="secondary" id="refreshAuto">Refresh status</button></div>
-    <div class="autostatus" id="autoStatus" role="status">Connecting to scheduler backend…</div>
+    <div class="headrow"><div><h2>Independent automatic schedules</h2><p>Universal SMP and Shattered Crown can run concurrently on separate schedules. Use the active campaign selector to edit each schedule.</p></div><button class="secondary" id="refreshAuto">Refresh status</button></div>
+    <div class="autostatus" id="autoStatus" role="status">Connecting to scheduler backend…</div><div class="campaign-strip" id="scheduleSummary" aria-live="polite"></div><p class="section-lede">Both schedules use your approved Discord webhooks. Each webhook is capped at one promotion every six hours across both campaigns to prevent duplicate spam. For fully independent delivery, connect distinct authorized channels.</p>
     <div class="stats">
       <div class="stat"><span>Schedule</span><strong id="autoState">Paused</strong><small>Requires connected destination</small></div>
       <div class="stat"><span>Next automatic post</span><strong id="nextPost" class="smallstat">Not scheduled</strong><small id="nextZone">—</small></div>
@@ -129,6 +151,26 @@
     </div>
     <p class="footnote">This tool does not log in to Minecraft listing sites, solve CAPTCHA, scrape accounts, send unsolicited DMs, or bypass posting limits. Keep promotional posts relevant and allowed by destination rules.</p>
   </section>
+  <section id="analytics" class="section">
+    <div class="headrow"><div><h2>Campaign analytics</h2><p>Confirmed Discord sends, dashboard activity, and manually reported outcomes — no estimated player traffic.</p></div><button class="secondary" id="refreshAnalytics">Refresh</button></div>
+    <div class="stats">
+      <div class="stat"><span>Discord posts accepted</span><strong id="metricSent">0</strong><small>Actual successful sends</small></div>
+      <div class="stat"><span>Discord failures</span><strong id="metricFailed">0</strong><small>Actual failed sends</small></div>
+      <div class="stat"><span>Directory links opened</span><strong id="metricOpens">0</strong><small>Operator clicks, not visitor clicks</small></div>
+      <div class="stat"><span>Listings marked submitted</span><strong id="metricSubmitted">0</strong><small>Manual submission records</small></div>
+    </div>
+    <div class="two">
+      <div class="panel"><h3 class="cardtitle">Directory activity</h3><p class="helper">Shows which listing website links you opened from this dashboard, not external traffic.</p><div id="analyticsBars" class="analytics-rows"></div></div>
+      <div class="panel"><h3 class="cardtitle">Manually reported results</h3><p class="helper">Enter clicks and joins only if you have real counts from a directory or your server tools. These values are not automatically verified.</p>
+        <form id="manualMetrics" class="metric-edit">
+          <div class="field"><label for="manualClicks">Reported listing clicks</label><input id="manualClicks" type="number" min="0" max="1000000" value="0" required /></div>
+          <div class="field"><label for="manualJoins">Reported player joins</label><input id="manualJoins" type="number" min="0" max="1000000" value="0" required /></div>
+          <button class="primary" type="submit">Save results</button>
+        </form><p class="helptext">Separate values for Universal SMP and Shattered Crown; never label estimates as verified.</p>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px"><h3 class="cardtitle">Campaign comparison</h3><div id="campaignCompare" class="analytics-rows"></div></div>
+  </section>
   <section id="updates" class="section">
     <div class="headrow"><div><h2>GitHub website updates</h2><p>Check for a newer version and install it straight from a release in your own GitHub repository.</p></div><button class="secondary" id="refreshUpdate">Refresh update status</button></div>
     <div class="panel">
@@ -173,7 +215,14 @@ const SITES=[
  {id:"minebuff",name:"MineBuff",initial:"BF",type:"Manual",desc:"Add or claim a server, then verify ownership.",url:"https://minebuff.com/en/guide"},
  {id:"mcservershare",name:"MCServerShare",initial:"SH",type:"Manual",desc:"Free Java & Bedrock directory; create an account to list.",url:"https://www.mcservershare.com/"},
  {id:"mcserverbuzz",name:"MinecraftServer.Buzz",initial:"BZ",type:"Manual",desc:"Minecraft server directory with community discovery tools.",url:"https://minecraftserver.buzz/"},
- {id:"minecraftip",name:"MinecraftIP",initial:"IP",type:"Manual",desc:"Minecraft server list covering Java and Bedrock communities.",url:"https://minecraftip.com/"}
+ {id:"minecraftip",name:"MinecraftIP",initial:"IP",type:"Manual",desc:"Minecraft server list covering Java and Bedrock communities.",url:"https://minecraftip.com/"},
+ {id:"minebrowse",name:"Minebrowse",initial:"MB",type:'Manual',desc:"Server listings, voting and player discovery",url:"https://www.minebrowse.com/"},
+ {id:"minecraftserversme",name:"MinecraftServers.me",initial:"ME",type:'Manual',desc:"Owner listing guide and moderation rules",url:"https://minecraftservers.me/guides/get-your-server-listed"},
+ {id:"mcserverscout",name:"MCServerScout",initial:"SC",type:'Manual',desc:"Free listing for reachable servers",url:"https://mcserverscout.com/faq"},
+ {id:"minecraftserversgg",name:"MinecraftServers.gg",initial:"GG",type:'Manual',desc:"Java and Bedrock directory and claimable pages",url:"https://minecraftservers.gg/"},
+ {id:"serverradar",name:"ServerRadar",initial:"SR",type:'Manual',desc:"Independent Java and Bedrock server directory",url:"https://www.minecraftserverradar.com/"},
+ {id:"mineserverlist",name:"MineServerList",initial:"LS",type:'Manual',desc:"Owner-defined listing information and versions",url:"https://www.mineserverlist.com/"},
+ {id:"minerate",name:"MineRate",initial:"MR",type:'Manual',desc:"Minecraft directory, search and server status",url:"https://minerate.net/"}
 ];
 let activeId='universal';let settings={...DEFAULTS,...read('ugnSettings',DEFAULTS)};
 let progressByCampaign=read('ugnProgressByCampaign',{universal:read('ugnProgress',{}),shattered:{}});
