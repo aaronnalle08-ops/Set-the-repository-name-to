@@ -2,30 +2,52 @@ name: Package UGN website updates
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing published release tag, e.g. v3.1.0'
+        required: true
+        type: string
 permissions:
   contents: write
+concurrency:
+  group: ugn-release-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.event.release.tag_name }}
+  cancel-in-progress: false
 jobs:
   package-and-upload:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.event.release.tag_name }}
     steps:
+      - name: Validate version tag
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release tag must be a version like v3.1.0 (not main)."
+            exit 1
+          fi
       - name: Check out release tag
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ env.RELEASE_TAG }}
       - name: Install Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify package and tests
+      - name: Verify release version and tests
         shell: bash
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          test "v$(node -p "require('./package.json').version")" = "$RELEASE_TAG" || { echo "The tag must match the version in package.json"; exit 1; }
+          actual=$(node -p "require('./package.json').version")
+          if [ "v$actual" != "$RELEASE_TAG" ]; then
+            echo "::error::Tag $RELEASE_TAG does not match package.json version $actual."
+            exit 1
+          fi
           npm test
-      - name: Build Windows-update ZIP (no secrets or saved data)
+      - name: Build Windows-update ZIP (without private data)
+        shell: bash
         run: |
           python3 - <<'PY'
+          from pathlib import Path
           import zipfile
           files = [
               'server.js','server.test.js','update-manager.js','update.test.js',
@@ -33,12 +55,22 @@ jobs:
               'start_windows.bat','update_windows.bat','update_windows.ps1',
               '.gitignore','.github/workflows/release.yml'
           ]
+          for file in files:
+              if not Path(file).is_file():
+                  raise SystemExit(f'Missing required file: {file}')
           with zipfile.ZipFile('ugn-auto-advertiser.zip', 'w', zipfile.ZIP_DEFLATED) as z:
-              for file in files: z.write(file)
-          print('Created release asset without data, .env, or webhooks')
+              for file in files:
+                  z.write(file)
+          print('Created ugn-auto-advertiser.zip without data, .env, or webhooks')
           PY
-      - name: Attach update package to published release
+      - name: Attach update package to existing published release
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$RELEASE_TAG" ugn-auto-advertiser.zip --clobber
+        run: |
+          gh release view "$RELEASE_TAG" --json isDraft -q '.isDraft' | grep -qx 'false' || {
+            echo "::error::Publish the GitHub release first using tag $RELEASE_TAG."
+            exit 1
+          }
+          gh release upload "$RELEASE_TAG" ugn-auto-advertiser.zip --clobber
+          echo "Release package is available on the release page for $RELEASE_TAG."
