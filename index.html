@@ -134,7 +134,7 @@
         <form id="newChannelForm">
           <div class="field"><label for="webhookName">Channel nickname</label><input id="webhookName" maxlength="60" placeholder="My UGN announcements" required autocomplete="off"/></div>
           <div class="field"><label for="webhookUrl">Discord webhook URL (private)</label><input id="webhookUrl" type="password" required placeholder="https://discord.com/api/webhooks/..." autocomplete="off"/></div>
-          <label class="permission"><input type="checkbox" id="permissionConfirmed" required/> I own this channel or have explicit permission to schedule promotional posts here.</label>
+          <div class="field"><label for="newChannelCampaign">Approved advertising project for this webhook</label><select id="newChannelCampaign"><option value="universal">Universal SMP only</option><option value="shattered">Shattered Crown only</option><option value="both">Both projects (explicit permission needed)</option></select></div><label class="permission"><input type="checkbox" id="permissionConfirmed" required/> I own this channel or have explicit permission to schedule promotional posts here.</label>
           <button class="primary" type="submit" id="addWebhook">Connect Discord webhook</button>
         </form>
         <p class="helper">Webhook secrets are stored in the backend's private data file, never shown again in the browser. Up to five approved channels.</p>
@@ -267,7 +267,7 @@ putData(settings);render();
 // Server-backed schedule controls. Other directory/listing functionality still works offline.
 let autoData=null;
 document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{el('campaignPicker').value=b.dataset.pick;el('campaignPicker').dispatchEvent(new Event('change'))}));
-el('campaignPicker').addEventListener('change',async()=>{const id=el('campaignPicker').value;try{const result=await api('/api/campaign/active','PUT',{campaignId:id});const data=await api('/api/state');activeId=id;settings=data.campaign;progress=progressByCampaign[id]||{};putData(settings);render();renderAuto(data);autoData=data;applySchedule(data.schedule);notify('Campaign selected. Both automatic schedules retain their individual settings.')}catch(e){el('campaignPicker').value=activeId;notify('Could not switch campaigns: '+e.message)}});
+el('campaignPicker').addEventListener('change',async()=>{const id=el('campaignPicker').value;try{const result=await api('/api/campaign/active','PUT',{campaignId:id});const data=await api('/api/state');activeId=id;settings=data.campaign;el('newChannelCampaign').value=activeId;progress=progressByCampaign[id]||{};putData(settings);render();renderAuto(data);autoData=data;applySchedule(data.schedule);notify('Campaign selected. Both automatic schedules retain their individual settings.')}catch(e){el('campaignPicker').value=activeId;notify('Could not switch campaigns: '+e.message)}});
 async function api(route,method='GET',body){
   let response;
   try {response=await fetch(route,{method,headers:{...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});}catch{throw Error('scheduler server is not running')}
@@ -282,15 +282,24 @@ function applySchedule(s){el('scheduleMode').value=s.mode;el('scheduleEvery').va
 function dateText(iso){if(!iso)return 'Not scheduled';try{return new Date(iso).toLocaleString([],{dateStyle:'medium',timeStyle:'short'})}catch{return iso}}
 function webhookRow(ch){
   const div=document.createElement('div');div.className='webhook';
-  const data=document.createElement('div');const name=document.createElement('strong');name.textContent=ch.name+(ch.enabled?'':' (disabled)');const mask=document.createElement('small');mask.textContent=ch.masked;data.append(name,mask);
+  const data=document.createElement('div');const name=document.createElement('strong');name.textContent=ch.name+(ch.enabled?'':' (disabled)');const mask=document.createElement('small');mask.textContent=ch.masked;data.append(name,mask);const assigned=document.createElement('small');assigned.textContent='Approved for: '+(ch.campaignIds||['universal']).map(id=>id==='shattered'?'Shattered Crown':'Universal SMP').join(' + ');data.append(assigned);
   const actions=document.createElement('div');actions.className='actions';
-  const test=document.createElement('button');test.className='compact';test.textContent='Send test';test.disabled=!ch.enabled;
+ const assignment=document.createElement('select');assignment.setAttribute('aria-label','Allowed campaigns for '+ch.name);
+ assignment.style.cssText='background:#0d192a;color:#f2f6ff;border:1px solid #345069;border-radius:9px;padding:8px';
+ for(const [value,label] of [['universal','Universal SMP'],['shattered','Shattered Crown'],['both','Both projects']]){const option=document.createElement('option');option.value=value;option.textContent=label;assignment.append(option)}
+ const targetIds=ch.campaignIds||['universal'];assignment.value=targetIds.length===2?'both':targetIds[0];
+ assignment.addEventListener('change',async()=>{
+  const ids=assignment.value==='both'?['universal','shattered']:[assignment.value];
+  if(ids.includes('shattered')&&!confirm('Confirm this Discord channel permits Shattered Crown promotions?')){assignment.value=targetIds.length===2?'both':targetIds[0];return}
+  try{await api('/api/channels/'+encodeURIComponent(ch.id),'PATCH',{campaignIds:ids});notify('Channel assignment saved');await refreshAuto()}catch(e){notify('Could not change channel assignment: '+e.message);assignment.value=targetIds.length===2?'both':targetIds[0]}
+ });
+  const test=document.createElement('button');test.className='compact';test.textContent='Send test';test.disabled=!ch.enabled||!(ch.campaignIds||['universal']).includes(activeId);
   test.addEventListener('click',async()=>{if(!confirm(`Send one clearly labeled test advertisement to ${ch.name}?`))return;test.disabled=true;try{const r=await api('/api/test','POST',{channelId:ch.id});notify(`Test: ${r.sent} sent, ${r.failed} failed`)}catch(e){notify('Test failed: '+e.message)}finally{await refreshAuto();test.disabled=false}});
   const remove=document.createElement('button');remove.className='compact';remove.textContent='Remove';
   remove.addEventListener('click',async()=>{if(!confirm(`Remove ${ch.name} from the auto advertiser?`))return;try{await api('/api/channels/'+encodeURIComponent(ch.id),'DELETE');notify('Channel removed');await refreshAuto()}catch(e){notify(e.message)}});
   const toggle=document.createElement('button');toggle.className='compact';toggle.textContent=ch.enabled?'Disable':'Enable';
   toggle.addEventListener('click',async()=>{try{await api('/api/channels/'+encodeURIComponent(ch.id),'PATCH',{enabled:!ch.enabled});notify(ch.enabled?'Channel disabled':'Channel enabled');await refreshAuto()}catch(e){notify(e.message)}});
-  actions.append(test,toggle,remove);div.append(data,actions);return div;
+  actions.append(assignment,test,toggle,remove);div.append(data,actions);return div;
 }
 function logRow(entry){const row=document.createElement('div');row.className='logentry';const col1=document.createElement('div');const when=document.createElement('strong');when.textContent=dateText(entry.at);const more=document.createElement('small');more.textContent=entry.trigger;col1.append(when,document.createElement('br'),more);const body=document.createElement('div');const channel=document.createElement('strong');channel.textContent=entry.channel;const msg=document.createElement('div');msg.textContent=(entry.campaignId?(entry.campaignId==='shattered'?'Shattered Crown: ':'Universal SMP: '):'')+entry.message;msg.className='helper';body.append(channel,msg);const badge=document.createElement('span');badge.className='pill '+entry.result;badge.textContent=entry.result;row.append(col1,body,badge);return row}
 function autoContent(c){
@@ -320,7 +329,7 @@ function renderAuto(data){
   el('connectionStatus').textContent='Scheduler connected';
   el('autoState').textContent=s.enabled?'Active':'Paused';el('autoState').style.color=s.enabled?'#82e6c1':'';
   el('nextPost').textContent=s.nextAt?dateText(s.nextAt):'Not scheduled';el('nextZone').textContent=s.mode==='weekly'?s.timeZone:'Interval schedule';
-  el('channelCount').textContent=data.channels.length;el('autoSent').textContent=data.statsByCampaign?.[activeId]?.sent||0;el('statAuto').textContent=data.statsByCampaign?.[activeId]?.sent||0;
+  el('channelCount').textContent=data.channels.filter(c=>c.enabled&&(c.campaignIds||['universal']).includes(activeId)).length;el('autoSent').textContent=data.statsByCampaign?.[activeId]?.sent||0;el('statAuto').textContent=data.statsByCampaign?.[activeId]?.sent||0;
   el('toggleSchedule').disabled=false;el('toggleSchedule').textContent=s.enabled?'Pause automatic posts':'Start automatic posts';
   const list=el('webhookList');list.replaceChildren();
   if(!data.channels.length){const p=document.createElement('p');p.className='helper';p.textContent='No channels connected. Add an authorized Discord webhook above.';list.append(p)}else list.replaceChildren(...data.channels.map(webhookRow));
@@ -368,7 +377,7 @@ el('manualMetrics').addEventListener('submit',async e=>{
  }catch(err){notify('Could not save reported results: '+err.message)}
 });
 async function refreshAuto(initial=false){
- try{const data=await api('/api/state');autoData=data;if(initial){activeId=data.activeCampaign||'universal';el('campaignPicker').value=activeId;progress=progressByCampaign[activeId]||{};settings=data.campaign;putData(settings);render();applySchedule(data.schedule)}renderAuto(data)}
+ try{const data=await api('/api/state');autoData=data;if(initial){activeId=data.activeCampaign||'universal';el('campaignPicker').value=activeId;progress=progressByCampaign[activeId]||{};settings=data.campaign;el('newChannelCampaign').value=activeId;putData(settings);render();applySchedule(data.schedule)}renderAuto(data)}
  catch(e){el('autoStatus').textContent='Scheduler offline — open this website from http://127.0.0.1:3000 after running server.js. File-only previews cannot send automatically.';el('autoStatus').className='autostatus offline';el('connectionStatus').textContent='Scheduler offline';el('toggleSchedule').disabled=true;}
 }
 el('refreshAuto').addEventListener('click',()=>refreshAuto());el('refreshLogs').addEventListener('click',()=>refreshAuto());
@@ -379,13 +388,13 @@ el('saveSchedule').addEventListener('click',async()=>{
 el('toggleSchedule').addEventListener('click',async()=>{
  if(!autoData)return;
  const enable=!autoData.schedule.enabled;
- if(enable && !confirm('Start sending the saved campaign to every connected and permitted Discord webhook on your chosen schedule?'))return;
+ if(enable && !confirm('Start this campaign’s schedule on its approved webhook channels? Other campaign schedules remain unchanged.'))return;
  try{await api('/api/activate','POST',{enabled:enable});notify(enable?'Automatic posting started':'Automatic posting paused');await refreshAuto()}
  catch(e){notify('Could not change schedule: '+e.message)}
 });
 el('newChannelForm').addEventListener('submit',async e=>{
  e.preventDefault();const btn=el('addWebhook');btn.disabled=true;
- try{await api('/api/channels','POST',{name:el('webhookName').value,url:el('webhookUrl').value,permissionConfirmed:el('permissionConfirmed').checked});el('webhookName').value='';el('webhookUrl').value='';el('permissionConfirmed').checked=false;notify('Discord webhook connected');await refreshAuto()}
+ try{await api('/api/channels','POST',{name:el('webhookName').value,url:el('webhookUrl').value,permissionConfirmed:el('permissionConfirmed').checked,campaignIds:el('newChannelCampaign').value==='both'?['universal','shattered']:[el('newChannelCampaign').value]});el('webhookName').value='';el('webhookUrl').value='';el('permissionConfirmed').checked=false;el('newChannelCampaign').value=activeId;notify('Discord webhook connected');await refreshAuto()}
  catch(err){notify('Could not connect: '+err.message)}finally{btn.disabled=false}
 });
 setInterval(()=>{if(!document.hidden)refreshAuto()},30000);
