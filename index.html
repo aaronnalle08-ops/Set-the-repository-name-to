@@ -42,9 +42,9 @@
   <div class="sidebar-note"><strong>Important</strong><p>Automated posting works only with incoming webhooks for channels you control or may promote in. Minecraft listing sites still need approved integrations or manual submissions.</p></div>
 </aside>
 <main>
-  <div class="top"><div><span class="eyebrow">Universal Gaming Network</span><h1 id="pageTitle">Advertising overview</h1></div><span class="status"><i></i> <span id="connectionStatus">Connecting to scheduler...</span></span></div>
+  <div class="top"><div><span class="eyebrow">Universal Gaming Network</span><h1 id="pageTitle">Advertising overview</h1><label class="helper" for="campaignPicker" style="display:inline-block;margin-top:10px;margin-right:10px">Active campaign</label><select id="campaignPicker" style="background:#13283c;color:#e5f6ff;border:1px solid #397081;border-radius:9px;padding:8px 12px"><option value="universal">Universal SMP</option><option value="shattered">Shattered Crown — in development</option></select></div><span class="status"><i></i> <span id="connectionStatus">Connecting to scheduler...</span></span></div>
   <section id="overview" class="section show">
-    <div class="hero"><div class="mini">YOUR NETWORK. EVERYWHERE PLAYERS LOOK.</div><h2>Turn one great ad into a smarter campaign.</h2><p>Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.</p><div class="iprow"><span class="ip" id="heroIp">play.universalgaming.us</span><button class="primary" id="copyIp">Copy server address</button><button class="secondary" data-go="campaign">Edit your campaign</button></div></div>
+    <div class="hero"><div class="mini">YOUR NETWORK. EVERYWHERE PLAYERS LOOK.</div><h2 id="heroTitle">Turn one great ad into a smarter campaign.</h2><p id="heroBlurb">Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.</p><div class="iprow"><span class="ip" id="heroIp">play.universalgaming.us</span><button class="primary" id="copyIp">Copy server address</button><button class="secondary" data-go="campaign">Edit your campaign</button></div></div>
     <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">5</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">5</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
     <div class="headrow"><div><h2>Recommended advertising sites</h2><p>Start with server directories that accept Minecraft server listings.</p></div><button class="secondary" data-go="directory">See all sites</button></div>
     <div class="platforms" id="overviewSites"></div>
@@ -53,7 +53,8 @@
   <section id="campaign" class="section">
     <div class="headrow"><div><h2>Create a reusable server campaign</h2><p>Save the campaign to the scheduler server before activating automatic posting.</p></div><button class="secondary" id="resetForm">Reset defaults</button></div>
     <div class="two"><div class="panel">
-      <div class="field"><label for="serverName">Server name</label><input id="serverName" maxlength="90" /></div>
+      <div class="field"><label for="serverStatus">Campaign status</label><select id="serverStatus"><option value="live">Live server — ready for players</option><option value="development">In development — recruiting helpers</option></select><span class="helper">Shattered Crown starts in development; do not list it as a live server without a working address.</span></div>
+       <div class="field"><label for="serverName">Server name</label><input id="serverName" maxlength="90" /></div>
       <div class="field"><label for="serverIp">Server address</label><input id="serverIp" maxlength="150" spellcheck="false" /></div>
       <div class="two"><div class="field"><label for="javaPort">Java port</label><input id="javaPort" type="number" min="1" max="65535" /></div><div class="field"><label for="bedrockPort">Bedrock port</label><input id="bedrockPort" type="number" min="1" max="65535" /></div></div>
       <div class="field"><label for="serverDesc">Server description</label><textarea id="serverDesc" rows="5" maxlength="1200"></textarea></div>
@@ -68,8 +69,8 @@
     </div></div>
   </section>
   <section id="directory" class="section">
-    <div class="headrow"><div><h2>Advertising destination directory</h2><p>These are supported opening points, not connected autoposting services.</p></div><div class="filter"><button class="selected" data-filter="all">All</button><button data-filter="pending">Pending</button><button data-filter="submitted">Submitted</button></div></div>
-    <div class="platforms" id="allSites"></div><p class="footnote">CraftRank supports a prefilled add-server form, but still requires owner login and confirmation. Other entries open their public registration, listing or help pages.</p>
+    <div class="headrow"><div><h2>Advertising destination directory</h2><p>More verified Minecraft listing sites. All site submissions require an account and manual owner confirmation; they are not automated publishing integrations.</p></div><div class="filter"><button class="selected" data-filter="all">All</button><button data-filter="pending">Pending</button><button data-filter="submitted">Submitted</button></div></div>
+    <div class="platforms" id="allSites"></div><p class="footnote">CraftRank supports a prefilled add-server form, but still requires owner login and confirmation. Other entries open their public registration, listing or help pages. Some directories require the server to be online before submitting. Do not submit an in-development campaign as a live server.</p>
   </section>
 
   <section id="auto" class="section">
@@ -156,13 +157,23 @@
 <script>
 (() => {
 'use strict';
-const DEFAULTS = {serverName:'Universal Gaming Network — Universal SMP',serverIp:'play.universalgaming.us',javaPort:'25565',bedrockPort:'19132',serverDesc:'A community-driven survival Minecraft network with Java & Bedrock crossplay. Grind, explore, build, and survive with custom furniture, plushies, armor, tools, seasonal content, an economy, jobs, and more. Play solo or with friends!',discord:'',website:''};
+const DEFAULTS = {serverName:'Universal Gaming Network — Universal SMP',serverIp:'play.universalgaming.us',javaPort:'25565',bedrockPort:'19132',serverDesc:'A community-driven survival Minecraft network with Java & Bedrock crossplay. Grind, explore, build, and survive with custom furniture, plushies, armor, tools, seasonal content, an economy, jobs, and more. Play solo or with friends!',discord:'',website:'',serverStatus:'live'};
+const SHATTERED={serverName:'Shattered Crown',serverIp:'',javaPort:'25565',bedrockPort:'19132',serverDesc:'Shattered Crown is an in-development Minecraft kingdom-building project with upgradeable blueprint buildings, research, resource production, castles, and warfare. We are looking for volunteer builders and mod creators to help bring it to life.',discord:'',website:'',serverStatus:'development'};
 const SITES=[
- {id:'craftrank',name:'CraftRank',initial:'CR',type:'Prefilled',desc:'Prefills the server registration form; sign in, review and confirm yourself.',url:'https://craftrank.org/panel/add',auto:'prefill'},
- {id:'minecraftmp',name:'Minecraft-MP',initial:'MP',type:'Manual',desc:'Free server listing with separate registration and server details.',url:'https://minecraft-mp.com/your-server/'},
- {id:'planetminecraft',name:'Planet Minecraft',initial:'PM',type:'Manual',desc:'Post your owned server once and verify ownership using its MOTD.',url:'https://www.planetminecraft.com/servers/'},
- {id:'minecraftservers',name:'MinecraftServers.org',initial:'MS',type:'Manual',desc:'Create an account, verify email, and add your online server.',url:'https://minecraftservers.org/help'},
- {id:'atlas',name:'Minecraft Atlas',initial:'MA',type:'Manual',desc:'Free listing page; the server must be online and reachable.',url:'https://minecraftatlas.com/submit'}
+ {id:"craftrank",name:"CraftRank",initial:"CR",type:"Prefilled",desc:"Pre-filled add-server form; review and submit manually.",url:"https://craftrank.org/panel/add",auto:'prefill'},
+ {id:"minecraftmp",name:"Minecraft-MP",initial:"MP",type:"Manual",desc:"Large Minecraft directory; add your online server through its owner tools.",url:"https://minecraft-mp.com/your-server/"},
+ {id:"planetminecraft",name:"Planet Minecraft",initial:"PM",type:"Manual",desc:"Community server listings and ownership verification.",url:"https://www.planetminecraft.com/servers/"},
+ {id:"minecraftservers",name:"MinecraftServers.org",initial:"MS",type:"Manual",desc:"Account and verified email required; server must be online.",url:"https://minecraftservers.org/help"},
+ {id:"atlas",name:"Minecraft Atlas",initial:"MA",type:"Manual",desc:"Submit a reachable server to an activity-focused directory.",url:"https://minecraftatlas.com/submit"},
+ {id:"buzz",name:"Minecraft.Buzz",initial:"MB",type:"Manual",desc:"Java and Bedrock discovery directory with voting and reviews.",url:"https://minecraft.buzz/"},
+ {id:"topg",name:"TopG",initial:"TG",type:"Manual",desc:"Free Minecraft server listing; account/login required.",url:"https://topg.org/minecraft-servers/add"},
+ {id:"minecraftserverlist",name:"Minecraft-ServerList",initial:"SL",type:"Manual",desc:"Server list with online verification and banners.",url:"https://minecraft-serverlist.com/help"},
+ {id:"mcserverlist",name:"MCServer-List",initial:"ML",type:"Manual",desc:"Vote-based Minecraft server directory; create an account.",url:"https://mcserver-list.com/help"},
+ {id:"minelist",name:"Minelist",initial:"MN",type:"Manual",desc:"Free directory listing for authorized server owners.",url:"https://minelist.net/help"},
+ {id:"minebuff",name:"MineBuff",initial:"BF",type:"Manual",desc:"Add or claim a server, then verify ownership.",url:"https://minebuff.com/en/guide"},
+ {id:"mcservershare",name:"MCServerShare",initial:"SH",type:"Manual",desc:"Free Java & Bedrock directory; create an account to list.",url:"https://www.mcservershare.com/"},
+ {id:"mcserverbuzz",name:"MinecraftServer.Buzz",initial:"BZ",type:"Manual",desc:"Minecraft server directory with community discovery tools.",url:"https://minecraftserver.buzz/"},
+ {id:"minecraftip",name:"MinecraftIP",initial:"IP",type:"Manual",desc:"Minecraft server list covering Java and Bedrock communities.",url:"https://minecraftip.com/"}
 ];
 let settings=read('ugnSettings',DEFAULTS);let progress=read('ugnProgress',{});let filter='all';
 function read(k, fallback){try{return JSON.parse(localStorage.getItem(k))||structuredClone(fallback)}catch{return {...fallback}}}
