@@ -67,7 +67,7 @@
   <section id="overview" class="section show">
     <div class="campaign-strip"><button class="campaign-tile selected" data-pick="universal"><strong>🌌 Universal SMP</strong><small id="universalQuick">Survival server ads and schedule</small></button><button class="campaign-tile" data-pick="shattered"><strong>⚔️ Shattered Crown</strong><small id="shatteredQuick">Kingdom project recruiting</small></button></div>
     <div class="hero"><div class="mini">YOUR NETWORK. EVERYWHERE PLAYERS LOOK.</div><h2 id="heroTitle">Turn one great ad into a smarter campaign.</h2><p id="heroBlurb">Manage Universal SMP listings, create platform-ready ad copy, and keep your outreach organized in one place.</p><div class="iprow"><span class="ip" id="heroIp">play.universalgaming.us</span><button class="primary" id="copyIp">Copy server address</button><button class="secondary" data-go="campaign">Edit your campaign</button></div></div>
-    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">21</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">21</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
+    <div class="stats"><div class="stat"><span>Supported listing sites</span><strong id="statSites">25</strong><small>Assisted submissions</small></div><div class="stat"><span>Marked submitted</span><strong id="statSubmitted">0</strong><small>Manually confirmed</small></div><div class="stat"><span>Still to submit</span><strong id="statRemaining">25</strong><small>Opportunities</small></div><div class="stat"><span>Auto-published</span><strong id="statAuto">0</strong><small>Webhook posts accepted</small></div></div>
     <div class="headrow"><div><h2>Recommended advertising sites</h2><p>Start with server directories that accept Minecraft server listings.</p></div><button class="secondary" data-go="directory">See all sites</button></div>
     <div class="platforms" id="overviewSites"></div>
     <p class="footnote">Tip: Most server directories require separate accounts, ownership verification, and manual confirmation. Mark a site as submitted only after you actually finish publishing on that site.</p>
@@ -222,7 +222,11 @@ const SITES=[
  {id:"minecraftserversgg",name:"MinecraftServers.gg",initial:"GG",type:'Manual',desc:"Java and Bedrock directory and claimable pages",url:"https://minecraftservers.gg/"},
  {id:"serverradar",name:"ServerRadar",initial:"SR",type:'Manual',desc:"Independent Java and Bedrock server directory",url:"https://www.minecraftserverradar.com/"},
  {id:"mineserverlist",name:"MineServerList",initial:"LS",type:'Manual',desc:"Owner-defined listing information and versions",url:"https://www.mineserverlist.com/"},
- {id:"minerate",name:"MineRate",initial:"MR",type:'Manual',desc:"Minecraft directory, search and server status",url:"https://minerate.net/"}
+ {id:"minerate",name:"MineRate",initial:"MR",type:'Manual',desc:"Minecraft directory, search and server status",url:"https://minerate.net/"},
+ {id:"listmc",name:"ListMC",initial:"LM",type:'Manual',desc:"Online server owner submission form",url:"https://listmc.io/add"},
+ {id:"gamemonitoring",name:"GameMonitoring",initial:"GM",type:'Manual',desc:"Minecraft add-server form with verification",url:"https://gamemonitoring.net/minecraft/servers/add"},
+ {id:"minecraftserverslistnet",name:"MinecraftServersList.net",initial:"LN",type:'Manual',desc:"Manual address submission for online Minecraft servers",url:"https://www.minecraftserverslist.net/addserver"},
+ {id:"mccompanion",name:"MCCompanion",initial:"MC",type:'Manual',desc:"Java/Bedrock owner publication after ownership verification",url:"https://mccompanion.net/docs/servers/server-list/"}
 ];
 let activeId='universal';let settings={...DEFAULTS,...read('ugnSettings',DEFAULTS)};
 let progressByCampaign=read('ugnProgressByCampaign',{universal:read('ugnProgress',{}),shattered:{}});
