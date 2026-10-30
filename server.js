@@ -30,7 +30,39 @@ const DEFAULT_SCHEDULE = {
   days: [1, 3, 5], time: '18:00', timeZone: 'America/New_York',
   nextAt: null, lastAt: null
 };
-const DEFAULT_STATE = {campaign:DEFAULT_CAMPAIGN, campaigns:{universal:DEFAULT_CAMPAIGN,shattered:DEFAULT_SHATTERED},activeCampaign:'universal', schedule:DEFAULT_SCHEDULE, channels:[],logs:[],stats:{sent:0,failed:0}};
+const EMPTY_METRICS = () => ({siteOpens:{},manualClicks:0,manualJoins:0});
+const EMPTY_SENDS = () => ({sent:0,failed:0,skipped:0});
+const DEFAULT_STATE = {
+  campaign:DEFAULT_CAMPAIGN,campaigns:{universal:DEFAULT_CAMPAIGN,shattered:DEFAULT_SHATTERED},
+  activeCampaign:'universal',schedule:DEFAULT_SCHEDULE,
+  schedules:{universal:DEFAULT_SCHEDULE,shattered:DEFAULT_SCHEDULE},
+  channels:[],logs:[],stats:EMPTY_SENDS(),
+  statsByCampaign:{universal:EMPTY_SENDS(),shattered:EMPTY_SENDS()},
+  analytics:{universal:EMPTY_METRICS(),shattered:EMPTY_METRICS()}
+};
+function normalizeState(s) {
+  const activeCampaign=CAMPAIGN_IDS.includes(s.activeCampaign)?s.activeCampaign:'universal';
+  const saved=s.campaigns||{};
+  const campaigns={
+    universal:{...DEFAULT_CAMPAIGN,...(saved.universal||s.campaign||{})},
+    shattered:{...DEFAULT_SHATTERED,...(saved.shattered||{})}
+  };
+  const schedules={};
+  // Migrate a v3.1 single schedule to the campaign which was active at upgrade time.
+  for(const id of CAMPAIGN_IDS) {
+    const legacy=!s.schedules&&id===activeCampaign?s.schedule:null;
+    schedules[id]={...DEFAULT_SCHEDULE,...(s.schedules?.[id]||legacy||{})};
+  }
+  const stats={...EMPTY_SENDS(),...s.stats};
+  const statsByCampaign={};
+  for(const id of CAMPAIGN_IDS)statsByCampaign[id]={...EMPTY_SENDS(),...(s.statsByCampaign?.[id]||(!s.statsByCampaign&&id==='universal'?stats:{}))};
+  const analytics={};
+  for(const id of CAMPAIGN_IDS)analytics[id]={...EMPTY_METRICS(),...s.analytics?.[id],siteOpens:{...(s.analytics?.[id]?.siteOpens||{})}};
+  return {...DEFAULT_STATE,...s,activeCampaign,campaigns, schedules,
+    campaign:campaigns[activeCampaign],schedule:schedules[activeCampaign], stats,statsByCampaign,analytics,
+    channels:Array.isArray(s.channels)?s.channels:[],logs:Array.isArray(s.logs)?s.logs:[]};
+}
+
 
 function validWebhook(input) {
   try {
@@ -102,22 +134,10 @@ function formatMessage(c) {
   return lines.join('\n').slice(0,1900);
 }
 function readState() {
-  try {
-    const s=JSON.parse(fs.readFileSync(DATA_FILE,'utf8'));
-    const activeCampaign=CAMPAIGN_IDS.includes(s.activeCampaign)?s.activeCampaign:'universal';
-    const saved=s.campaigns||{};
-    const campaigns={
-      universal:{...DEFAULT_CAMPAIGN,...(saved.universal || s.campaign || {})},
-      shattered:{...DEFAULT_SHATTERED,...(saved.shattered||{})}
-    };
-    return {...DEFAULT_STATE,...s,activeCampaign,campaigns,campaign:campaigns[activeCampaign],
-      schedule:{...DEFAULT_SCHEDULE,...s.schedule},channels:Array.isArray(s.channels)?s.channels:[],
-      logs:Array.isArray(s.logs)?s.logs:[],stats:{...DEFAULT_STATE.stats,...s.stats}};
-  } catch(e) {
-    if(e.code!=='ENOENT')throw e;
-    return structuredClone(DEFAULT_STATE);
-  }
+  try{return normalizeState(JSON.parse(fs.readFileSync(DATA_FILE,'utf8')));}
+  catch(e){if(e.code!=='ENOENT')throw e;return normalizeState({});}
 }
+
 function persist(s) {
   fs.mkdirSync(DATA_DIR,{recursive:true,mode:0o700});
   const temp = DATA_FILE+'.tmp';
@@ -125,10 +145,10 @@ function persist(s) {
   fs.renameSync(temp,DATA_FILE);
 }
 function infoForClient(s, active) {
-  return {campaign:s.campaign, activeCampaign:s.activeCampaign, campaigns:s.campaigns, schedule:s.schedule, channels:s.channels.map(x=>({id:x.id,name:x.name,enabled:x.enabled,masked:'Discord webhook saved ••••'+x.url.slice(-5)})),logs:s.logs.slice(-65),stats:s.stats, busy:active};
+  return {campaign:s.campaign, activeCampaign:s.activeCampaign, campaigns:s.campaigns, schedule:s.schedule, schedules:s.schedules, analytics:s.analytics, statsByCampaign:s.statsByCampaign, channels:s.channels.map(x=>({id:x.id,name:x.name,enabled:x.enabled,masked:'Discord webhook saved ••••'+x.url.slice(-5)})),logs:s.logs.slice(-65),stats:s.stats, busy:active};
 }
 function createApp(options = {}) {
-  const state = options.initialState ? structuredClone(options.initialState) : readState();
+  const state = options.initialState ? normalizeState(structuredClone(options.initialState)) : readState();
   let busy = false;
   let ticking = false;
   const write = options.persist || (()=>persist(state));
@@ -151,55 +171,70 @@ function createApp(options = {}) {
 
   const appendLog = (entry) => {state.logs.unshift({id:crypto.randomUUID(),at:new Date().toISOString(),...entry});state.logs.length=Math.min(state.logs.length,200);write();};
 
-  async function sendOne(channel, trigger) {
+  async function sendOne(channel, trigger, campaignId) {
+    const stats=state.statsByCampaign[campaignId];
+    const now=Date.now();
+    const last=Date.parse(channel.lastPostAt||'');
+    // Cross-campaign rate cap: 6 hours per connected Discord webhook.
+    if(Number.isFinite(last) && now-last<6*3600000) {
+      stats.skipped++;state.stats.skipped++;
+      appendLog({campaignId,channel:channel.name,trigger,result:'skipped',message:'Skipped: this channel received an advertisement within the past 6 hours'});
+      return 'skipped';
+    }
     try {
-      const response = await poster(channel.url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'UGN Announcements',content:(trigger==='test'?'🧪 **Test post (UGN Advertising Command Center)**\n\n':'')+formatMessage(state.campaign),allowed_mentions:{parse:[]}}),signal:AbortSignal.timeout(15000)});
-      if (!response.ok) {
-        if ([401,403,404].includes(response.status)) channel.enabled = false;
-        state.stats.failed++;
-        appendLog({channel:channel.name,trigger,result:'failed',message:`Discord HTTP ${response.status}${[401,403,404].includes(response.status)?' — channel disabled':''}`});
-        return false;
+      const response=await poster(channel.url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:'UGN Announcements',content:(trigger==='test'?'🧪 **Test post (UGN Advertising Command Center)**\n\n':'')+formatMessage(state.campaigns[campaignId]),allowed_mentions:{parse:[]}}),
+        signal:AbortSignal.timeout(15000)});
+      if(!response.ok){
+        if([401,403,404].includes(response.status))channel.enabled=false;
+        stats.failed++;state.stats.failed++;
+        appendLog({campaignId,channel:channel.name,trigger,result:'failed',message:`Discord HTTP ${response.status}${[401,403,404].includes(response.status)?' — channel disabled':''}`});
+        return 'failed';
       }
-      state.stats.sent++;
-      appendLog({channel:channel.name,trigger,result:'sent',message:'Discord accepted the post'});
-      return true;
-    } catch (e) {
-      state.stats.failed++;
-      appendLog({channel:channel.name,trigger,result:'failed',message:e.name==='TimeoutError'?'Request timed out':'Could not reach Discord'});
-      return false;
+      channel.lastPostAt=new Date(now).toISOString();
+      stats.sent++;state.stats.sent++;
+      appendLog({campaignId,channel:channel.name,trigger,result:'sent',message:'Discord accepted the post'});
+      return 'sent';
+    }catch(e){
+      stats.failed++;state.stats.failed++;
+      appendLog({campaignId,channel:channel.name,trigger,result:'failed',message:e.name==='TimeoutError'?'Request timed out':'Could not reach Discord'});
+      return 'failed';
     }
   }
-  async function runPost(trigger, id) {
-    if(busy) throw Error('A send is already in progress.');
-    const channels = id ? state.channels.filter(x=>x.id===id&&x.enabled) : state.channels.filter(x=>x.enabled);
-    if(!channels.length) throw Error('Connect at least one enabled Discord webhook first.');
+  async function runPost(trigger,id,campaignId=state.activeCampaign) {
+    if(busy)throw Error('A send is already in progress.');
+    if(!CAMPAIGN_IDS.includes(campaignId))throw Error('Invalid campaign.');
+    const channels=id?state.channels.filter(x=>x.id===id&&x.enabled):state.channels.filter(x=>x.enabled);
+    if(!channels.length)throw Error('Connect at least one enabled Discord webhook first.');
     busy=true;
-    try {
-      let successes=0;
-      for (const channel of channels) if(await sendOne(channel,trigger)) successes++;
-      return {attempted:channels.length,sent:successes,failed:channels.length-successes};
-    } finally {busy=false;write();}
+    try{
+      const result={attempted:channels.length,sent:0,failed:0,skipped:0};
+      for(const channel of channels) result[await sendOne(channel,trigger,campaignId)]++;
+      return result;
+    }finally{busy=false;write();}
   }
   async function tick() {
-    if(ticking || busy || !state.schedule.enabled || !state.schedule.nextAt) return;
-    const now = Date.now();
-    if(new Date(state.schedule.nextAt).getTime() > now) return;
+    if(ticking||busy)return;
     ticking=true;
-    try {
-      const intervalMs = state.schedule.mode === 'interval' ? state.schedule.every*(state.schedule.unit==='days'?86400000:3600000) : 7*86400000;
-      const overdueBy = now - new Date(state.schedule.nextAt).getTime();
-      if (overdueBy > intervalMs) {
-        state.schedule.nextAt = computeNext(state.schedule,now);
-        appendLog({channel:'Scheduler',trigger:'scheduled',result:'skipped',message:'Skipped stale missed run after extended downtime'});
-      } else {
-        // Advance schedule before sending so process restarts do not duplicate old runs.
-        state.schedule.lastAt=new Date(now).toISOString();
-        state.schedule.nextAt=computeNext(state.schedule,now);
-        write();
-        try {await runPost('scheduled');}
-        catch(e){appendLog({channel:'Scheduler',trigger:'scheduled',result:'failed',message:e.message});}
+    try{
+      for(const campaignId of CAMPAIGN_IDS){
+        const schedule=state.schedules[campaignId];
+        if(!schedule.enabled||!schedule.nextAt)continue;
+        const now=Date.now();
+        if(Date.parse(schedule.nextAt)>now)continue;
+        const intervalMs=schedule.mode==='interval'?schedule.every*(schedule.unit==='days'?86400000:3600000):7*86400000;
+        const overdueBy=now-Date.parse(schedule.nextAt);
+        schedule.nextAt=computeNext(schedule,now);
+        if(overdueBy>intervalMs){
+          appendLog({campaignId,channel:'Scheduler',trigger:'scheduled',result:'skipped',message:'Skipped stale missed run after extended downtime'});
+        }else{
+          schedule.lastAt=new Date(now).toISOString();
+          write(); // advance due time before posting to avoid retry storms
+          try{await runPost('scheduled',undefined,campaignId);}
+          catch(e){appendLog({campaignId,channel:'Scheduler',trigger:'scheduled',result:'failed',message:e.message});}
+        }
       }
-    } finally {ticking=false;}
+    }finally{ticking=false;}
   }
   const json=(res,status,data)=>send(res,status,JSON.stringify(data),'application/json; charset=utf-8');
   function send(res,status,body,contentType) {
@@ -270,11 +305,8 @@ function createApp(options = {}) {
         const changed=body.campaignId!==state.activeCampaign;
         state.activeCampaign=body.campaignId;
         state.campaign=state.campaigns[state.activeCampaign];
-        if(changed && state.schedule.enabled) {
-          state.schedule.enabled=false;state.schedule.nextAt=null;
-          appendLog({channel:'Scheduler',trigger:'control',result:'paused',message:'Paused automatically after switching campaigns; restart when ready'});
-        }
-        write();return json(res,200,{ok:true,activeCampaign:state.activeCampaign,paused:changed});
+        state.schedule=state.schedules[state.activeCampaign];
+        write();return json(res,200,{ok:true,activeCampaign:state.activeCampaign,paused:false});
       }
       if(req.method==='PUT' && route==='/api/campaign') {
         if(busy)throw Error('A send is already in progress.');
@@ -301,7 +333,7 @@ function createApp(options = {}) {
         const n=state.channels.length;
         state.channels=state.channels.filter(x=>x.id!==id);
         if(n===state.channels.length)return json(res,404,{error:'Channel not found.'});
-        if(!state.channels.some(x=>x.enabled)){state.schedule.enabled=false;state.schedule.nextAt=null;}
+        if(!state.channels.some(x=>x.enabled))for(const sched of Object.values(state.schedules)){sched.enabled=false;sched.nextAt=null;}
         write();return json(res,200,{ok:true});
       }
       if(req.method==='PATCH' && route.startsWith('/api/channels/')) {
@@ -311,12 +343,13 @@ function createApp(options = {}) {
         const body=await readBody(req);
         if(typeof body.enabled!=='boolean')throw Error('Specify whether the channel is enabled.');
         channel.enabled=body.enabled;
-        if(!state.channels.some(x=>x.enabled)){state.schedule.enabled=false;state.schedule.nextAt=null;}
+        if(!state.channels.some(x=>x.enabled))for(const sched of Object.values(state.schedules)){sched.enabled=false;sched.nextAt=null;}
         write();return json(res,200,{ok:true});
       }
       if(req.method==='PUT' && route==='/api/schedule') {
         const s=validateSchedule(await readBody(req));
-        state.schedule={...s,enabled:state.schedule.enabled,nextAt:state.schedule.enabled?computeNext(s):null,lastAt:state.schedule.lastAt};
+        state.schedules[state.activeCampaign]={...s,enabled:state.schedule.enabled,nextAt:state.schedule.enabled?computeNext(s):null,lastAt:state.schedule.lastAt};
+        state.schedule=state.schedules[state.activeCampaign];
         write();return json(res,200,{ok:true});
       }
       if(req.method==='POST' && route==='/api/activate') {
@@ -325,8 +358,24 @@ function createApp(options = {}) {
         if(body.enabled && !state.channels.some(x=>x.enabled))throw Error('Add an authorized Discord channel before starting.');
         state.schedule.enabled=body.enabled;
         state.schedule.nextAt=body.enabled?computeNext(state.schedule):null;
-        write();appendLog({channel:'Scheduler',trigger:'control',result:body.enabled?'enabled':'paused',message:body.enabled?'Schedule started':'Schedule paused'});
+        write();appendLog({campaignId:state.activeCampaign,channel:'Scheduler',trigger:'control',result:body.enabled?'enabled':'paused',message:body.enabled?'Schedule started':'Schedule paused'});
         return json(res,200,{ok:true});
+      }
+      if(req.method==='POST' && route==='/api/analytics/site-open') {
+        const body=await readBody(req);
+        const id=String(body.siteId||'');
+        if(!/^[a-z][a-z0-9-]{1,45}$/.test(id))throw Error('Invalid site identifier.');
+        const opens=state.analytics[state.activeCampaign].siteOpens;
+        opens[id]=Math.min(1000000,(opens[id]||0)+1);
+        write();return json(res,200,{ok:true,siteOpens:opens[id]});
+      }
+      if(req.method==='POST' && route==='/api/analytics/manual') {
+        const body=await readBody(req);
+        if(!['manualClicks','manualJoins'].includes(body.metric))throw Error('Choose manually reported clicks or joins.');
+        const value=Number(body.value);
+        if(!Number.isInteger(value)||value<0||value>1000000)throw Error('Enter a whole number between 0 and 1,000,000.');
+        state.analytics[state.activeCampaign][body.metric]=value;
+        write();return json(res,200,{ok:true});
       }
       if(req.method==='POST' && route==='/api/test') {
         const body=await readBody(req);
