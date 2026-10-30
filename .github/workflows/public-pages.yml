@@ -1,0 +1,43 @@
+name: Publish public UGN website (no custom domain)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/website/public/**'
+      - '.github/workflows/public-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: public-ugn-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out public website
+        uses: actions/checkout@v4
+      - name: Verify static site contents only
+        run: |
+          test -f deploy/website/public/index.html
+          test "$(find deploy/website/public -type f | wc -l)" -eq 1
+          ! grep -Eiq 'ADMIN_PASSWORD|CLOUDFLARE_TUNNEL_TOKEN|discord\.com/api/webhooks/' deploy/website/public/index.html
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload only public landing page
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: deploy/website/public
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish public UGN site
+        id: deployment
+        uses: actions/deploy-pages@v4
