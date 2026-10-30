@@ -13,6 +13,8 @@ A campaign-management dashboard for Universal SMP and Shattered Crown, with auth
 - Persistent Docker volume for the private data folder, with a migration guide to carry over the existing local campaigns and scheduled webhooks.
 - Detailed deployment guide for an assigned public Minecraft server IP and custom DNS for Shattered Crown. No server is automatically provisioned.
 
+**No domain or DNS access?** Use the [Domain-free launch guide](deploy/website/NO_DOMAIN_SETUP.md). It configures a free GitHub Pages public site, a Tailscale-only private dashboard, and a Minecraft host-assigned public IP without changing `universalgaming.us`.
+
 **Start here:** [Secure website deployment](deploy/website/DEPLOY.md) and [Shattered Crown public IP setup](deploy/minecraft/README.md).
 
 ## What changed in v3.2.0
