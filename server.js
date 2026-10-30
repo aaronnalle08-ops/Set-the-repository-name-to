@@ -55,12 +55,12 @@ function normalizeState(s) {
   }
   const stats={...EMPTY_SENDS(),...s.stats};
   const statsByCampaign={};
-  for(const id of CAMPAIGN_IDS)statsByCampaign[id]={...EMPTY_SENDS(),...(s.statsByCampaign?.[id]||(!s.statsByCampaign&&id==='universal'?stats:{}))};
+  for(const id of CAMPAIGN_IDS)statsByCampaign[id]={...EMPTY_SENDS(),...(s.statsByCampaign?.[id]||(!s.statsByCampaign&&id===activeCampaign?stats:{}))};
   const analytics={};
   for(const id of CAMPAIGN_IDS)analytics[id]={...EMPTY_METRICS(),...s.analytics?.[id],siteOpens:{...(s.analytics?.[id]?.siteOpens||{})}};
   return {...DEFAULT_STATE,...s,activeCampaign,campaigns, schedules,
     campaign:campaigns[activeCampaign],schedule:schedules[activeCampaign], stats,statsByCampaign,analytics,
-    channels:Array.isArray(s.channels)?s.channels:[],logs:Array.isArray(s.logs)?s.logs:[]};
+    channels:Array.isArray(s.channels)?s.channels.map(ch=>({...ch,campaignIds:Array.isArray(ch.campaignIds)&&ch.campaignIds.length?ch.campaignIds.filter(id=>CAMPAIGN_IDS.includes(id)):['universal']})):[],logs:Array.isArray(s.logs)?s.logs:[]};
 }
 
 
@@ -145,7 +145,7 @@ function persist(s) {
   fs.renameSync(temp,DATA_FILE);
 }
 function infoForClient(s, active) {
-  return {campaign:s.campaign, activeCampaign:s.activeCampaign, campaigns:s.campaigns, schedule:s.schedule, schedules:s.schedules, analytics:s.analytics, statsByCampaign:s.statsByCampaign, channels:s.channels.map(x=>({id:x.id,name:x.name,enabled:x.enabled,masked:'Discord webhook saved ••••'+x.url.slice(-5)})),logs:s.logs.slice(-65),stats:s.stats, busy:active};
+  return {campaign:s.campaign, activeCampaign:s.activeCampaign, campaigns:s.campaigns, schedule:s.schedule, schedules:s.schedules, analytics:s.analytics, statsByCampaign:s.statsByCampaign, channels:s.channels.map(x=>({id:x.id,name:x.name,enabled:x.enabled,campaignIds:x.campaignIds||['universal'],masked:'Discord webhook saved ••••'+x.url.slice(-5)})),logs:s.logs.slice(-65),stats:s.stats, busy:active};
 }
 function createApp(options = {}) {
   const state = options.initialState ? normalizeState(structuredClone(options.initialState)) : readState();
@@ -204,7 +204,7 @@ function createApp(options = {}) {
   async function runPost(trigger,id,campaignId=state.activeCampaign) {
     if(busy)throw Error('A send is already in progress.');
     if(!CAMPAIGN_IDS.includes(campaignId))throw Error('Invalid campaign.');
-    const channels=id?state.channels.filter(x=>x.id===id&&x.enabled):state.channels.filter(x=>x.enabled);
+    const channels=state.channels.filter(x=>x.enabled&&(x.campaignIds||['universal']).includes(campaignId)&&(!id||x.id===id));
     if(!channels.length)throw Error('Connect at least one enabled Discord webhook first.');
     busy=true;
     try{
@@ -212,6 +212,13 @@ function createApp(options = {}) {
       for(const channel of channels) result[await sendOne(channel,trigger,campaignId)]++;
       return result;
     }finally{busy=false;write();}
+  }
+  function reconcileChannelSchedules(){
+    for(const campaignId of CAMPAIGN_IDS){
+      if(!state.channels.some(x=>x.enabled&&(x.campaignIds||['universal']).includes(campaignId))){
+        const sched=state.schedules[campaignId];sched.enabled=false;sched.nextAt=null;
+      }
+    }
   }
   async function tick() {
     if(ticking||busy)return;
@@ -326,14 +333,16 @@ function createApp(options = {}) {
         if(!name || !validWebhook(url)) throw Error('Enter a channel name and a valid Discord incoming webhook URL.');
         if(state.channels.length>=5)throw Error('Maximum of 5 authorized channels in this starter version.');
         if(state.channels.some(x=>x.url===url))throw Error('That Discord webhook is already connected.');
-        state.channels.push({id:crypto.randomUUID(),name,url,enabled:true});write();return json(res,201,{ok:true});
+        const ids=body.campaignIds===undefined?[state.activeCampaign]:body.campaignIds;
+        if(!Array.isArray(ids)||!ids.length||ids.some(id=>!CAMPAIGN_IDS.includes(id))||new Set(ids).size!==ids.length)throw Error('Assign the channel to Universal SMP, Shattered Crown, or both.');
+        state.channels.push({id:crypto.randomUUID(),name,url,enabled:true,campaignIds:ids});write();return json(res,201,{ok:true});
       }
       if(req.method==='DELETE' && route.startsWith('/api/channels/')) {
         const id=route.split('/').pop();
         const n=state.channels.length;
         state.channels=state.channels.filter(x=>x.id!==id);
         if(n===state.channels.length)return json(res,404,{error:'Channel not found.'});
-        if(!state.channels.some(x=>x.enabled))for(const sched of Object.values(state.schedules)){sched.enabled=false;sched.nextAt=null;}
+        reconcileChannelSchedules();
         write();return json(res,200,{ok:true});
       }
       if(req.method==='PATCH' && route.startsWith('/api/channels/')) {
@@ -341,9 +350,13 @@ function createApp(options = {}) {
         const channel=state.channels.find(x=>x.id===id);
         if(!channel)return json(res,404,{error:'Channel not found.'});
         const body=await readBody(req);
-        if(typeof body.enabled!=='boolean')throw Error('Specify whether the channel is enabled.');
-        channel.enabled=body.enabled;
-        if(!state.channels.some(x=>x.enabled))for(const sched of Object.values(state.schedules)){sched.enabled=false;sched.nextAt=null;}
+        if(typeof body.enabled==='boolean')channel.enabled=body.enabled;
+        if(body.campaignIds!==undefined){
+          if(!Array.isArray(body.campaignIds)||!body.campaignIds.length||body.campaignIds.some(id=>!CAMPAIGN_IDS.includes(id))||new Set(body.campaignIds).size!==body.campaignIds.length)throw Error('Choose one or both valid campaigns.');
+          channel.campaignIds=body.campaignIds;
+        }
+        if(typeof body.enabled!=='boolean'&&body.campaignIds===undefined)throw Error('Specify channel enabled state or campaign assignments.');
+        reconcileChannelSchedules();
         write();return json(res,200,{ok:true});
       }
       if(req.method==='PUT' && route==='/api/schedule') {
@@ -355,7 +368,7 @@ function createApp(options = {}) {
       if(req.method==='POST' && route==='/api/activate') {
         const body=await readBody(req);
         if(typeof body.enabled!=='boolean')throw Error('Specify whether the schedule is enabled.');
-        if(body.enabled && !state.channels.some(x=>x.enabled))throw Error('Add an authorized Discord channel before starting.');
+        if(body.enabled && !state.channels.some(x=>x.enabled&&(x.campaignIds||['universal']).includes(state.activeCampaign)))throw Error('Add an approved Discord channel assigned to this campaign before starting.');
         state.schedule.enabled=body.enabled;
         state.schedule.nextAt=body.enabled?computeNext(state.schedule):null;
         write();appendLog({campaignId:state.activeCampaign,channel:'Scheduler',trigger:'control',result:body.enabled?'enabled':'paused',message:body.enabled?'Schedule started':'Schedule paused'});
@@ -379,7 +392,7 @@ function createApp(options = {}) {
       }
       if(req.method==='POST' && route==='/api/test') {
         const body=await readBody(req);
-        if(typeof body.channelId!=='string'||!state.channels.some(x=>x.id===body.channelId&&x.enabled))throw Error('Choose a connected channel.');
+        if(typeof body.channelId!=='string'||!state.channels.some(x=>x.id===body.channelId&&x.enabled&&(x.campaignIds||['universal']).includes(state.activeCampaign)))throw Error('Choose a connected channel.');
         const result=await runPost('test',body.channelId);
         return json(res,200,result);
       }
