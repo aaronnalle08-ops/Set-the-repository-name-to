@@ -13,6 +13,14 @@ const PORT = Number(process.env.PORT || 3000);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'ugn-private.json');
+const PUBLIC_ORIGIN = process.env.PUBLIC_ORIGIN || '';
+function validatePublicOrigin(value) {
+  let u;
+  try {u=new URL(value);}catch{throw Error('PUBLIC_ORIGIN must be a valid HTTPS address.');}
+  if(u.protocol!=='https:'||u.username||u.password||u.pathname!=='/'||u.search||u.hash)
+    throw Error('PUBLIC_ORIGIN must be an HTTPS origin like https://admin.example.com without a path.');
+  return u.origin;
+}
 const DEFAULT_CAMPAIGN = {
   serverName: 'Universal Gaming Network — Universal SMP',
   serverIp: 'play.universalgaming.us', javaPort: '25565', bedrockPort: '19132',
@@ -266,6 +274,14 @@ function createApp(options = {}) {
     if(!authorized(req)){res.writeHead(401,{'WWW-Authenticate':'Basic realm="UGN Admin"','Cache-Control':'no-store'});return res.end('Authentication required');}
     const route=(req.url||'/').split('?')[0];
     try {
+      if(PUBLIC_ORIGIN && ['POST','PUT','PATCH','DELETE'].includes(req.method)){
+        const origin=validatePublicOrigin(PUBLIC_ORIGIN);
+        // Cross-site requests must never use the ambient browser login or Access session.
+        if(req.headers.origin!==origin || req.headers['sec-fetch-site'] && !['same-origin','none'].includes(req.headers['sec-fetch-site']))
+          throw Error('Cross-origin modifications are not allowed.');
+        if(['POST','PUT','PATCH'].includes(req.method)&&!/^application\/json(?:\s*;|$)/i.test(String(req.headers['content-type']||'')))
+          throw Error('Use an application/json request.');
+      }
       if(req.method==='GET' && (route==='/'||route==='/index.html')) return send(res,200,fs.readFileSync(path.join(__dirname,'index.html')),'text/html; charset=utf-8');
       if(req.method==='GET' && route==='/api/state') return json(res,200,infoForClient(state,busy));
       if(req.method==='GET' && route==='/api/update/status') {
@@ -405,6 +421,11 @@ function createApp(options = {}) {
   return {handler,tick,state,runPost};
 }
 function start() {
+  if(process.env.NODE_ENV==='production'){
+    if(!ADMIN_PASSWORD || ADMIN_PASSWORD.length<24)throw Error('Production requires ADMIN_PASSWORD of at least 24 characters.');
+    if(!PUBLIC_ORIGIN)throw Error('Production requires PUBLIC_ORIGIN=https://admin.yourdomain.com.');
+    validatePublicOrigin(PUBLIC_ORIGIN);
+  }
   if(!Number.isInteger(PORT)||PORT<1||PORT>65535)throw Error('Invalid PORT');
   if(HOST!=='127.0.0.1' && HOST!=='localhost' && HOST!=='::1' && !ADMIN_PASSWORD)throw Error('Set ADMIN_PASSWORD before exposing this server on a network.');
   const app=createApp();
