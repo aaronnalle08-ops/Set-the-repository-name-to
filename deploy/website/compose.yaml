@@ -1,0 +1,55 @@
+name: ugn-public
+services:
+  dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/website/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+      DATA_DIR: /app/data
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set a long unique administrator password in your private .env file}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set an HTTPS admin hostname in your private .env file}
+    volumes:
+      - ugn_private:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('node:http').get('http://127.0.0.1:3000/',r=>process.exit(r.statusCode===401?0:1)).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 20s
+
+  public:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=16m
+      - /var/run:size=8m
+      - /tmp:size=16m
+    security_opt:
+      - no-new-privileges:true
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: ["tunnel","--no-autoupdate","run","--token","${CLOUDFLARE_TUNNEL_TOKEN:?Set your secret Cloudflare tunnel token in .env}"]
+    depends_on:
+      - dashboard
+      - public
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  ugn_private:
