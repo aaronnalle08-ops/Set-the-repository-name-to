@@ -63,3 +63,21 @@ test('production deployment keeps private dashboard behind an unpublished port a
   assert.match(ignore,/\bdata\b/);
   assert.match(ignore,/\.env/);
 });
+
+test('domain-free publishing uploads only the public site and private dashboard binds loopback',()=>{
+ const workflow=read('.github/workflows/public-pages.yml');
+ assert.match(workflow,/actions\/upload-pages-artifact@v4/);
+ assert.match(workflow,/actions\/deploy-pages@v4/);
+ assert.match(workflow,/path:\s*deploy\/website\/public/);
+ const compose=read('deploy/website/compose-tailnet.yaml');
+ assert.match(compose,/"127\.0\.0\.1:3000:3000"/);
+ assert.doesNotMatch(compose,/"0\.0\.0\.0:3000:3000"/);
+ assert.match(compose,/PUBLIC_ORIGIN:/);
+ assert.match(compose,/ADMIN_PASSWORD:/);
+ const publicSite=read('deploy/website/public/index.html');
+ assert.match(publicSite,/class="logo" href="\.\/"/);
+ const docs=read('deploy/website/NO_DOMAIN_SETUP.md');
+ assert.match(docs,/tailscale serve --bg 3000/);
+ assert.match(docs,/github\.io\/Set-the-repository-name-to/);
+ assert.doesNotMatch(publicSite,/ADMIN_PASSWORD|CLOUDFLARE_TUNNEL_TOKEN/);
+});
