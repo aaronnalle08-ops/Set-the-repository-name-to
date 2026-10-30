@@ -242,6 +242,7 @@ function webhookRow(ch){
 }
 function logRow(entry){const row=document.createElement('div');row.className='logentry';const col1=document.createElement('div');const when=document.createElement('strong');when.textContent=dateText(entry.at);const more=document.createElement('small');more.textContent=entry.trigger;col1.append(when,document.createElement('br'),more);const body=document.createElement('div');const channel=document.createElement('strong');channel.textContent=entry.channel;const msg=document.createElement('div');msg.textContent=entry.message;msg.className='helper';body.append(channel,msg);const badge=document.createElement('span');badge.className='pill '+entry.result;badge.textContent=entry.result;row.append(col1,body,badge);return row}
 function autoContent(c){
+ if(isDevelopment(c))return `🌌 **${c.serverName}** 🌌\n\n${c.serverDesc}\n\n🛠️ In development — seeking volunteer builders and mod creators. Not open for public joining yet.${c.discord?'\n💬 Discord: '+c.discord:''}${c.website?'\n🌐 Website: '+c.website:''}\n\n✨ Join the community and follow our progress!`.slice(0,1900);
  return `🌌 **${c.serverName}** 🌌\n\n${c.serverDesc}\n\n☕ Java: ${c.serverIp}:${c.javaPort}\n🎮 Bedrock: ${c.serverIp}:${c.bedrockPort}${c.discord?'\n💬 Discord: '+c.discord:''}${c.website?'\n🌐 Website: '+c.website:''}\n\n✨ Join our Minecraft community!`.slice(0,1900);
 }
 function renderAuto(data){
