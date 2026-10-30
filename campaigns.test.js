@@ -12,7 +12,7 @@ test('Shattered Crown defaults to a development recruitment ad without a fabrica
  assert.doesNotMatch(message,/Java:|Bedrock:|YOUR-SERVER-IP/);
  assert.match(formatMessage(app.state.campaigns.universal),/play\.universalgaming\.us/);
 });
-test('separate campaigns preserve UGN changes and pause live schedules on switch',async t=>{
+test('separate campaigns preserve UGN changes and do not pause an independent schedule on switch',async t=>{
  const app=createApp({initialState:DEFAULT_STATE,persist:()=>{}});
  const server=http.createServer((req,res)=>app.handler(req,res));
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -28,8 +28,9 @@ test('separate campaigns preserve UGN changes and pause live schedules on switch
  app.state.schedule.enabled=true;app.state.schedule.nextAt=new Date(Date.now()+3600000).toISOString();
  r=await api('/api/campaign/active','PUT',{campaignId:'shattered'});
  assert.equal(r.status,200);
- assert.equal(app.state.schedule.enabled,false);
- assert.equal(app.state.schedule.nextAt,null);
+ assert.equal(app.state.schedules.universal.enabled,true);
+ assert.equal(app.state.schedules.shattered.enabled,false);
+ assert.ok(app.state.schedules.universal.nextAt);
  r=await api('/api/state');
  assert.equal(r.data.activeCampaign,'shattered');
  assert.equal(r.data.campaign.serverStatus,'development');
@@ -46,4 +47,76 @@ test('separate campaigns preserve UGN changes and pause live schedules on switch
  r=await api('/api/state');
  r=await api('/api/campaign','PUT',{...r.data.campaigns.universal,serverStatus:'live',serverIp:''});
  assert.equal(r.status,400);
+});
+
+test('migration preserves v3.1 single schedule in previously active Shattered Crown campaign',()=>{
+ const legacy=structuredClone(DEFAULT_STATE);
+ delete legacy.schedules;
+ legacy.activeCampaign='shattered';
+ legacy.schedule={mode:'interval',every:3,unit:'days',enabled:true,timeZone:'America/New_York',nextAt:'2027-01-01T00:00:00.000Z',lastAt:null};
+ delete legacy.statsByCampaign;
+ const app=createApp({initialState:legacy,persist:()=>{}});
+ assert.equal(app.state.activeCampaign,'shattered');
+ assert.equal(app.state.schedules.shattered.every,3);
+ assert.equal(app.state.schedules.shattered.enabled,true);
+ assert.equal(app.state.schedules.universal.enabled,false);
+ assert.equal(app.state.schedule,app.state.schedules.shattered);
+});
+test('independent schedules send on their own due times to approved campaign channels',async t=>{
+ const delivered=[];
+ const app=createApp({initialState:DEFAULT_STATE,persist:()=>{},fetch:async (u,opts)=>{delivered.push({url:u,content:JSON.parse(opts.body).content});return {ok:true,status:204}}});
+ const server=http.createServer((req,res)=>app.handler(req,res));
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const base='http://127.0.0.1:'+server.address().port;
+ const api=async(route,method='GET',body)=>{const r=await fetch(base+route,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});return {status:r.status,data:await r.json()}};
+ const a='https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz';
+ const b='https://discord.com/api/webhooks/123456789012345679/abcdefghijklmnopqrstuvwxyz';
+ let r=await api('/api/channels','POST',{name:'UGN',url:a,permissionConfirmed:true,campaignIds:['universal']});
+ assert.equal(r.status,201);
+ r=await api('/api/channels','POST',{name:'Crown',url:b,permissionConfirmed:true,campaignIds:['shattered']});
+ assert.equal(r.status,201);
+ app.state.schedules.universal.enabled=true;app.state.schedules.universal.nextAt=new Date(Date.now()-2000).toISOString();
+ app.state.schedules.shattered.enabled=true;app.state.schedules.shattered.nextAt=new Date(Date.now()-2000).toISOString();
+ await app.tick();
+ assert.equal(delivered.length,2);
+ assert.ok(delivered.find(x=>x.url===a).content.includes('play.universalgaming.us'));
+ assert.ok(delivered.find(x=>x.url===b).content.includes('In development'));
+ assert.ok(!delivered.find(x=>x.url===b).content.includes('Java:'));
+ assert.equal(app.state.statsByCampaign.universal.sent,1);
+ assert.equal(app.state.statsByCampaign.shattered.sent,1);
+ assert.ok(Date.parse(app.state.schedules.universal.nextAt)>Date.now());
+ assert.ok(Date.parse(app.state.schedules.shattered.nextAt)>Date.now());
+});
+test('shared webhooks are limited across both schedules to one post per six hours',async t=>{
+ const delivered=[];
+ const app=createApp({initialState:DEFAULT_STATE,persist:()=>{},fetch:async(u,opts)=>{delivered.push(u);return {ok:true,status:204}}});
+ const server=http.createServer((req,res)=>app.handler(req,res));
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const url='http://127.0.0.1:'+server.address().port;
+ const channel='https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz';
+ const response=await fetch(url+'/api/channels',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'Both',url:channel,permissionConfirmed:true,campaignIds:['universal','shattered']})});
+ assert.equal(response.status,201);
+ for(const s of Object.values(app.state.schedules)){s.enabled=true;s.nextAt=new Date(Date.now()-500).toISOString()}
+ await app.tick();
+ assert.equal(delivered.length,1);
+ assert.equal(app.state.stats.skipped,1);
+ assert.equal(app.state.logs.some(x=>x.result==='skipped'&&x.campaignId==='shattered'),true);
+});
+test('analytics counts operator link opens and separately labeled manual values without pretending visitors',async t=>{
+ const app=createApp({initialState:DEFAULT_STATE,persist:()=>{}});
+ const server=http.createServer((req,res)=>app.handler(req,res));
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const base='http://127.0.0.1:'+server.address().port;
+ async function req(path,body){const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,data:await r.json()}}
+ let r=await req('/api/analytics/site-open',{siteId:'minecraftserversme'});assert.equal(r.status,200);
+ r=await req('/api/analytics/manual',{metric:'manualClicks',value:25});assert.equal(r.status,200);
+ r=await req('/api/analytics/manual',{metric:'manualJoins',value:5});assert.equal(r.status,200);
+ assert.equal(app.state.analytics.universal.siteOpens.minecraftserversme,1);
+ assert.equal(app.state.analytics.universal.manualClicks,25);
+ assert.equal(app.state.analytics.universal.manualJoins,5);
+ r=await req('/api/analytics/manual',{metric:'manualJoins',value:-1});assert.equal(r.status,400);
+ r=await req('/api/analytics/site-open',{siteId:'https://evil.example'});assert.equal(r.status,400);
 });
