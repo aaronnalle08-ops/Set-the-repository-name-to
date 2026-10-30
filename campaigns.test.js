@@ -1,0 +1,48 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const http=require('node:http');
+const {createApp,DEFAULT_STATE,formatMessage}=require('./server.js');
+test('Shattered Crown defaults to a development recruitment ad without a fabricated join address',()=>{
+ const app=createApp({initialState:DEFAULT_STATE,persist:()=>{}});
+ assert.equal(app.state.campaigns.shattered.serverStatus,'development');
+ assert.equal(app.state.campaigns.shattered.serverIp,'');
+ const message=formatMessage(app.state.campaigns.shattered);
+ assert.match(message,/In development/);
+ assert.doesNotMatch(message,/Java:|Bedrock:|YOUR-SERVER-IP/);
+ assert.match(formatMessage(app.state.campaigns.universal),/play\.universalgaming\.us/);
+});
+test('separate campaigns preserve UGN changes and pause live schedules on switch',async t=>{
+ const app=createApp({initialState:DEFAULT_STATE,persist:()=>{}});
+ const server=http.createServer((req,res)=>app.handler(req,res));
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const base='http://127.0.0.1:'+server.address().port;
+ const api=async (route,method='GET',body)=>{
+  const r=await fetch(base+route,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+  return {status:r.status,data:await r.json()};
+ };
+ let r=await api('/api/state');
+ assert.equal(r.data.activeCampaign,'universal');
+ assert.equal(r.data.campaign.serverIp,'play.universalgaming.us');
+ app.state.schedule.enabled=true;app.state.schedule.nextAt=new Date(Date.now()+3600000).toISOString();
+ r=await api('/api/campaign/active','PUT',{campaignId:'shattered'});
+ assert.equal(r.status,200);
+ assert.equal(app.state.schedule.enabled,false);
+ assert.equal(app.state.schedule.nextAt,null);
+ r=await api('/api/state');
+ assert.equal(r.data.activeCampaign,'shattered');
+ assert.equal(r.data.campaign.serverStatus,'development');
+ assert.equal(r.data.campaigns.universal.serverIp,'play.universalgaming.us');
+ r=await api('/api/campaign','PUT',{...r.data.campaign,serverDesc:'Recruiting Shattered Crown builders and mod creators.'});
+ assert.equal(r.status,200);
+ r=await api('/api/campaign/active','PUT',{campaignId:'universal'});
+ assert.equal(r.status,200);
+ r=await api('/api/state');
+ assert.match(r.data.campaign.serverName,/Universal/);
+ assert.match(r.data.campaigns.shattered.serverDesc,/Recruiting Shattered Crown/);
+ r=await api('/api/campaign/active','PUT',{campaignId:'shattered'});
+ assert.equal(r.status,200);
+ r=await api('/api/campaign','PUT',{...r.data.campaigns.universal,serverStatus:'live',serverIp:''});
+ assert.equal(r.status,400);
+});
