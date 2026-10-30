@@ -264,6 +264,7 @@ function createApp(options = {}) {
       }
 
       if(req.method==='PUT' && route==='/api/campaign/active') {
+        if(busy)throw Error('A send is already in progress.');
         const body=await readBody(req);
         if(!CAMPAIGN_IDS.includes(body.campaignId))throw Error('Choose Universal SMP or Shattered Crown.');
         const changed=body.campaignId!==state.activeCampaign;
@@ -276,6 +277,7 @@ function createApp(options = {}) {
         write();return json(res,200,{ok:true,activeCampaign:state.activeCampaign,paused:changed});
       }
       if(req.method==='PUT' && route==='/api/campaign') {
+        if(busy)throw Error('A send is already in progress.');
         const body=await readBody(req);
         const c={};
         for(const k of Object.keys(DEFAULT_CAMPAIGN)) c[k]=String(body[k]??'').trim().slice(0,k==='serverDesc'?1200:250);
