@@ -425,6 +425,8 @@ function start() {
     if(!ADMIN_PASSWORD || ADMIN_PASSWORD.length<24)throw Error('Production requires ADMIN_PASSWORD of at least 24 characters.');
     if(!PUBLIC_ORIGIN)throw Error('Production requires PUBLIC_ORIGIN=https://admin.yourdomain.com.');
     validatePublicOrigin(PUBLIC_ORIGIN);
+    if(/replace_|example\.com/i.test(ADMIN_PASSWORD)||/example\.com/i.test(PUBLIC_ORIGIN))
+      throw Error('Replace all example password and hostname values before starting production.');
   }
   if(!Number.isInteger(PORT)||PORT<1||PORT>65535)throw Error('Invalid PORT');
   if(HOST!=='127.0.0.1' && HOST!=='localhost' && HOST!=='::1' && !ADMIN_PASSWORD)throw Error('Set ADMIN_PASSWORD before exposing this server on a network.');
