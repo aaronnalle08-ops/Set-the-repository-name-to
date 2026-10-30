@@ -1,5 +1,18 @@
 # UGN Advertising Command Center — GitHub Update Setup
 
+## Fix: release titled v3.1.0 but tagged main
+
+If the release is named `v3.1.0` but shows `main` as the **tag**, the Windows updater cannot install it.
+
+1. Go to [Draft a new release](https://github.com/aaronnalle08-ops/Set-the-repository-name-to/releases/new).
+2. In **Choose a tag**, type **`v3.1.0`** (not `main`). Choose **Create new tag: v3.1.0 on publish** with `main` as its target branch.
+3. Set release title to `UGN Advertising Command Center v3.1.0`, then click **Publish release**.
+4. Go to the [Actions tab](https://github.com/aaronnalle08-ops/Set-the-repository-name-to/actions). Wait for **Package UGN website updates** to finish. The release needs an attached `ugn-auto-advertiser.zip`.
+5. If the release-packaging job doesn't start automatically, open that workflow and click **Run workflow**, choose branch `main`, and enter `v3.1.0` in its **release_tag** input.
+6. Return to your installed UGN v3.0.0 dashboard under **Website updates**. Use **Check for updates** and **Install update & restart**.
+
+You **do not have to delete the incorrectly tagged release** to publish a new release with the proper tag. Do not delete your `main` branch or its files.
+
 ## Upgrade an existing v3.0.0 Windows installation to v3.1.0
 
 The local website is on version **3.0.0** until it installs a newer published release. The GitHub source files have already been updated to **3.1.0**.
