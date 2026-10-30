@@ -1,8 +1,8 @@
 {
   "name": "ugn-advertising-command-center",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "private": true,
-  "description": "UGN dashboard with 25 Minecraft listing destinations, separate campaign schedules, honest analytics, and safe GitHub updates",
+  "description": "UGN advertising dashboard, dual campaign schedules, analytics, private Cloudflare Tunnel hosting and public Minecraft community site",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

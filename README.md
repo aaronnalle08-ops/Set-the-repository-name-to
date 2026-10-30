@@ -1,8 +1,19 @@
 # Universal Gaming Network — Advertising Command Center
 
-**Source version: v3.2.0** • Node.js 22+ • Windows local dashboard
+**Source version: v3.3.0** • Node.js 22+ • Windows local dashboard
 
-A local campaign-management dashboard for Universal SMP and Shattered Crown, with authorized Discord announcements, a directory of 25 Minecraft listing resources, independent project schedules, and honest campaign analytics.
+A campaign-management dashboard for Universal SMP and Shattered Crown, with authorized Discord announcements, a directory of 25 Minecraft listing resources, independent project schedules, and honest campaign analytics.
+
+## What's new in v3.3.0 — secure public hosting
+
+- Public-facing UGN landing page for Universal SMP and Shattered Crown, separate from the advertising controls.
+- Docker Compose template for an always-on Ubuntu VPS with no published HTTP ports, using a Cloudflare Tunnel.
+- Two distinct hostnames: public community page and private administrator dashboard protected by Cloudflare Access and a long local password.
+- Production security checks for admin credentials, a configured HTTPS public origin and cross-site write restrictions.
+- Persistent Docker volume for the private data folder, with a migration guide to carry over the existing local campaigns and scheduled webhooks.
+- Detailed deployment guide for an assigned public Minecraft server IP and custom DNS for Shattered Crown. No server is automatically provisioned.
+
+**Start here:** [Secure website deployment](deploy/website/DEPLOY.md) and [Shattered Crown public IP setup](deploy/minecraft/README.md).
 
 ## What changed in v3.2.0
 
@@ -31,7 +42,7 @@ This local desktop website only schedules posts while the computer and Node.js b
 
 Keep `data/`, webhook URLs, `.env`, `node_modules/`, and passwords out of public GitHub.
 
-## Upgrade from v3.1.0
+## Upgrade from v3.1.0 (original v3.2 release notes)
 
 1. Publish release tag **`v3.2.0`** from the latest `main` commit after all tests pass.
 2. Verify the **Package UGN website updates** Actions job succeeds and attaches `ugn-auto-advertiser.zip`.

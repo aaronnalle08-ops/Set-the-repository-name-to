@@ -1,0 +1,11 @@
+.git
+.github
+.gitignore
+.env
+**/.env
+data
+node_modules
+*.zip
+backups
+deploy/website/backups
+*.log

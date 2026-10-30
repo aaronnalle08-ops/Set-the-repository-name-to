@@ -1,3 +1,16 @@
+# Secure Hosting for v3.3.0
+
+The latest v3.3.0 source adds optional **cloud hosting** for the UGN dashboard, a **public static website**, and detailed Minecraft DNS/server instructions.
+
+- [Secure Cloudflare Tunnel & Access Docker deployment](deploy/website/DEPLOY.md)
+- [Shattered Crown public Minecraft server/DNS setup](deploy/minecraft/README.md)
+
+Existing Windows v3.2.0 installations can also update using the GitHub Releases workflow after a **v3.3.0** release is published. Release tag must match the package version. A Windows update does **not** automatically create a VPS, Cloudflare domain, Minecraft server, or public IP. The hosted dashboard is updated via Docker rather than the in-app Windows-only update button.
+
+**Saved state:** Keep and back up your private `data/` folder. The VPS uses a named Docker volume instead of overwriting this data; you must copy it securely if migrating from Windows.
+
+---
+
 # GitHub release updater — v3.2.0
 
 Repository: `aaronnalle08-ops/Set-the-repository-name-to`
